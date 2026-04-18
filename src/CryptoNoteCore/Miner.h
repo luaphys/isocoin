@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,18 +9,18 @@
 #include <mutex>
 #include <thread>
 
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/Difficulty.h"
-#include "CryptoNoteCore/IMinerHandler.h"
-#include "CryptoNoteCore/MinerConfig.h"
-#include "CryptoNoteCore/OnceInInterval.h"
+#include "isocoinCore/isocoinBasic.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/Difficulty.h"
+#include "isocoinCore/IMinerHandler.h"
+#include "isocoinCore/MinerConfig.h"
+#include "isocoinCore/OnceInInterval.h"
 
 #include <Logging/LoggerRef.h>
 
 #include "Serialization/ISerializer.h"
 
-namespace CryptoNote {
+namespace isocoin {
   class miner {
   public:
     miner(const Currency& currency, IMinerHandler& handler, Logging::ILogger& log);

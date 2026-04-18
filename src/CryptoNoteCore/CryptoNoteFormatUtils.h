@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,8 +6,8 @@
 
 #include <boost/utility/value_init.hpp>
 
-#include "CryptoNoteBasic.h"
-#include "CryptoNoteSerialization.h"
+#include "isocoinBasic.h"
+#include "isocoinSerialization.h"
 
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
@@ -16,7 +16,7 @@ namespace Logging {
 class ILogger;
 }
 
-namespace CryptoNote {
+namespace isocoin {
 
 bool parseAndValidateTransactionFromBinaryArray(const BinaryArray& transactionBinaryArray, Transaction& transaction, Crypto::Hash& transactionHash, Crypto::Hash& transactionPrefixHash);
 

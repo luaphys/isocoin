@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,8 +8,8 @@
 
 #include "Common/CommandLine.h"
 #include "Common/StringTools.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/Account.h"
+#include "isocoinCore/isocoinFormatUtils.h"
+#include "isocoinCore/Account.h"
 #include "crypto/hash.h"
 #include "WalletLegacy/WalletHelper.h"
 // #include "wallet_errors.h"
@@ -17,7 +17,7 @@
 #include "Rpc/JsonRpc.h"
 
 using namespace Logging;
-using namespace CryptoNote;
+using namespace isocoin;
 
 namespace Tools {
 
@@ -32,9 +32,9 @@ void wallet_rpc_server::init_options(boost::program_options::options_description
 wallet_rpc_server::wallet_rpc_server(
   System::Dispatcher& dispatcher, 
   Logging::ILogger& log, 
-  CryptoNote::IWalletLegacy&w,
-  CryptoNote::INode& n, 
-  CryptoNote::Currency& currency, 
+  isocoin::IWalletLegacy&w,
+  isocoin::INode& n, 
+  isocoin::Currency& currency, 
   const std::string& walletFile)
   : 
   HttpServer(dispatcher, log), 
@@ -77,9 +77,9 @@ bool wallet_rpc_server::init(const boost::program_options::variables_map& vm) {
   return true;
 }
 
-void wallet_rpc_server::processRequest(const CryptoNote::HttpRequest& request, CryptoNote::HttpResponse& response) {
+void wallet_rpc_server::processRequest(const isocoin::HttpRequest& request, isocoin::HttpResponse& response) {
 
-  using namespace CryptoNote::JsonRpc;
+  using namespace isocoin::JsonRpc;
 
   JsonRpcRequest jsonRequest;
   JsonRpcResponse jsonResponse;
@@ -122,9 +122,9 @@ bool wallet_rpc_server::on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE:
 }
 //------------------------------------------------------------------------------------------------------------------------------
 bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::request& req, wallet_rpc::COMMAND_RPC_TRANSFER::response& res) {
-  std::vector<CryptoNote::WalletLegacyTransfer> transfers;
+  std::vector<isocoin::WalletLegacyTransfer> transfers;
   for (auto it = req.destinations.begin(); it != req.destinations.end(); it++) {
-    CryptoNote::WalletLegacyTransfer transfer;
+    isocoin::WalletLegacyTransfer transfer;
     transfer.address = it->address;
     transfer.amount = it->amount;
     transfers.push_back(transfer);
@@ -135,14 +135,14 @@ bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::requ
     std::string payment_id_str = req.payment_id;
 
     Crypto::Hash payment_id;
-    if (!CryptoNote::parsePaymentId(payment_id_str, payment_id)) {
+    if (!isocoin::parsePaymentId(payment_id_str, payment_id)) {
       throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID, 
         "Payment id has invalid format: \"" + payment_id_str + "\", expected 64-character string");
     }
 
     BinaryArray extra_nonce;
-    CryptoNote::setPaymentIdToTransactionExtraNonce(extra_nonce, payment_id);
-    if (!CryptoNote::addExtraNonceToTransactionExtra(extra, extra_nonce)) {
+    isocoin::setPaymentIdToTransactionExtraNonce(extra_nonce, payment_id);
+    if (!isocoin::addExtraNonceToTransactionExtra(extra, extra_nonce)) {
       throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID,
         "Something went wrong with payment_id. Please check its format: \"" + payment_id_str + "\", expected 64-character string");
     }
@@ -151,10 +151,10 @@ bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::requ
   std::string extraString;
   std::copy(extra.begin(), extra.end(), std::back_inserter(extraString));
   try {
-    CryptoNote::WalletHelper::SendCompleteResultObserver sent;
+    isocoin::WalletHelper::SendCompleteResultObserver sent;
     WalletHelper::IWalletRemoveObserverGuard removeGuard(m_wallet, sent);
 
-    CryptoNote::TransactionId tx = m_wallet.sendTransaction(transfers, req.fee, extraString, req.mixin, req.unlock_time);
+    isocoin::TransactionId tx = m_wallet.sendTransaction(transfers, req.fee, extraString, req.mixin, req.unlock_time);
     if (tx == WALLET_LEGACY_INVALID_TRANSACTION_ID) {
       throw std::runtime_error("Couldn't send transaction");
     }
@@ -166,7 +166,7 @@ bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::requ
       throw std::system_error(sendError);
     }
 
-    CryptoNote::WalletLegacyTransaction txInfo;
+    isocoin::WalletLegacyTransaction txInfo;
     m_wallet.getTransaction(tx, txInfo);
     res.tx_hash = Common::podToHex(txInfo.hash);
 
@@ -188,7 +188,7 @@ bool wallet_rpc_server::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& r
 //------------------------------------------------------------------------------------------------------------------------------
 bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMENTS::request& req, wallet_rpc::COMMAND_RPC_GET_PAYMENTS::response& res) {
   Crypto::Hash expectedPaymentId;
-  CryptoNote::BinaryArray payment_id_blob;
+  isocoin::BinaryArray payment_id_blob;
 
   if (!Common::fromHex(req.payment_id, payment_id_blob)) {
     throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID, "Payment ID has invald format");

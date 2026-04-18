@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -18,15 +18,15 @@
 #include "Serialization/SerializationTools.h"
 #include "Serialization/BinarySerializationTools.h"
 
-#include "CryptoNoteFormatUtils.h"
-#include "CryptoNoteTools.h"
-#include "CryptoNoteConfig.h"
+#include "isocoinFormatUtils.h"
+#include "isocoinTools.h"
+#include "isocoinConfig.h"
 
 using namespace Logging;
 
 #undef ERROR
 
-namespace CryptoNote {
+namespace isocoin {
 
   //---------------------------------------------------------------------------------
   // BlockTemplate
@@ -82,13 +82,13 @@ namespace CryptoNote {
     std::vector<Crypto::Hash> m_txHashes;
   };
 
-  using CryptoNote::BlockInfo;
+  using isocoin::BlockInfo;
 
   //---------------------------------------------------------------------------------
   tx_memory_pool::tx_memory_pool(
-    const CryptoNote::Currency& currency, 
-    CryptoNote::ITransactionValidator& validator, 
-    CryptoNote::ITimeProvider& timeProvider,
+    const isocoin::Currency& currency, 
+    isocoin::ITransactionValidator& validator, 
+    isocoin::ITimeProvider& timeProvider,
     Logging::ILogger& log) :
     m_currency(currency),
     m_validator(validator), 
@@ -438,7 +438,7 @@ namespace CryptoNote {
 
 #define CURRENT_MEMPOOL_ARCHIVE_VER 1
 
-  void serialize(CryptoNote::tx_memory_pool::TransactionDetails& td, ISerializer& s) {
+  void serialize(isocoin::tx_memory_pool::TransactionDetails& td, ISerializer& s) {
     s(td.id, "id");
     s(td.blobSize, "blobSize");
     s(td.fee, "fee");

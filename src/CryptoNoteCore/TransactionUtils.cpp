@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,15 +7,15 @@
 #include <unordered_set>
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteFormatUtils.h"
+#include "isocoinCore/Account.h"
+#include "isocoinFormatUtils.h"
 #include "TransactionExtra.h"
 
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace isocoin {
 
-bool checkInputsKeyimagesDiff(const CryptoNote::TransactionPrefix& tx) {
+bool checkInputsKeyimagesDiff(const isocoin::TransactionPrefix& tx) {
   std::unordered_set<Crypto::KeyImage> ki;
   for (const auto& in : tx.inputs) {
     if (in.type() == typeid(KeyInput)) {
@@ -61,14 +61,14 @@ TransactionTypes::InputType getTransactionInputType(const TransactionInput& in) 
   return TransactionTypes::InputType::Invalid;
 }
 
-const TransactionInput& getInputChecked(const CryptoNote::TransactionPrefix& transaction, size_t index) {
+const TransactionInput& getInputChecked(const isocoin::TransactionPrefix& transaction, size_t index) {
   if (transaction.inputs.size() <= index) {
     throw std::runtime_error("Transaction input index out of range");
   }
   return transaction.inputs[index];
 }
 
-const TransactionInput& getInputChecked(const CryptoNote::TransactionPrefix& transaction, size_t index, TransactionTypes::InputType type) {
+const TransactionInput& getInputChecked(const isocoin::TransactionPrefix& transaction, size_t index, TransactionTypes::InputType type) {
   const auto& input = getInputChecked(transaction, index);
   if (getTransactionInputType(input) != type) {
     throw std::runtime_error("Unexpected transaction input type");
@@ -88,14 +88,14 @@ TransactionTypes::OutputType getTransactionOutputType(const TransactionOutputTar
   return TransactionTypes::OutputType::Invalid;
 }
 
-const TransactionOutput& getOutputChecked(const CryptoNote::TransactionPrefix& transaction, size_t index) {
+const TransactionOutput& getOutputChecked(const isocoin::TransactionPrefix& transaction, size_t index) {
   if (transaction.outputs.size() <= index) {
     throw std::runtime_error("Transaction output index out of range");
   }
   return transaction.outputs[index];
 }
 
-const TransactionOutput& getOutputChecked(const CryptoNote::TransactionPrefix& transaction, size_t index, TransactionTypes::OutputType type) {
+const TransactionOutput& getOutputChecked(const isocoin::TransactionPrefix& transaction, size_t index, TransactionTypes::OutputType type) {
   const auto& output = getOutputChecked(transaction, index);
   if (getTransactionOutputType(output.target) != type) {
     throw std::runtime_error("Unexpected transaction output target type");
@@ -109,7 +109,7 @@ bool isOutToKey(const Crypto::PublicKey& spendPublicKey, const Crypto::PublicKey
   return pk == outKey;
 }
 
-bool findOutputsToAccount(const CryptoNote::TransactionPrefix& transaction, const AccountPublicAddress& addr,
+bool findOutputsToAccount(const isocoin::TransactionPrefix& transaction, const AccountPublicAddress& addr,
                           const SecretKey& viewSecretKey, std::vector<uint32_t>& out, uint64_t& amount) {
   AccountKeys keys;
   keys.address = addr;

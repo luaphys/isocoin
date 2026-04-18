@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,8 +8,8 @@
 
 #include "CommonTypes.h"
 #include "Common/BlockingQueue.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "isocoinCore/isocoinFormatUtils.h"
+#include "isocoinCore/TransactionApi.h"
 
 #include "IWallet.h"
 #include "INode.h"
@@ -19,7 +19,7 @@ using namespace Crypto;
 
 namespace {
 
-using namespace CryptoNote;
+using namespace isocoin;
 
 void checkOutputKey(
   const KeyDerivation& derivation,
@@ -79,7 +79,7 @@ void findMyOutputs(
   }
 }
 
-std::vector<Crypto::Hash> getBlockHashes(const CryptoNote::CompleteBlock* blocks, size_t count) {
+std::vector<Crypto::Hash> getBlockHashes(const isocoin::CompleteBlock* blocks, size_t count) {
   std::vector<Crypto::Hash> result;
   result.reserve(count);
 
@@ -92,9 +92,9 @@ std::vector<Crypto::Hash> getBlockHashes(const CryptoNote::CompleteBlock* blocks
 
 }
 
-namespace CryptoNote {
+namespace isocoin {
 
-TransfersConsumer::TransfersConsumer(const CryptoNote::Currency& currency, INode& node, const SecretKey& viewSecret) :
+TransfersConsumer::TransfersConsumer(const isocoin::Currency& currency, INode& node, const SecretKey& viewSecret) :
   m_node(node), m_viewSecret(viewSecret), m_currency(currency) {
   updateSyncStart();
 }
@@ -302,9 +302,9 @@ std::error_code TransfersConsumer::onPoolUpdated(const std::vector<std::unique_p
   unconfirmedBlockInfo.height = WALLET_UNCONFIRMED_TRANSACTION_HEIGHT;
 
   std::error_code processingError;
-  for (auto& cryptonoteTransaction : addedTransactions) {
-    m_poolTxs.emplace(cryptonoteTransaction->getTransactionHash());
-    processingError = processTransaction(unconfirmedBlockInfo, *cryptonoteTransaction.get());
+  for (auto& isocoinTransaction : addedTransactions) {
+    m_poolTxs.emplace(isocoinTransaction->getTransactionHash());
+    processingError = processTransaction(unconfirmedBlockInfo, *isocoinTransaction.get());
     if (processingError) {
       for (auto& sub : m_subscriptions) {
         sub.second->onError(processingError, WALLET_UNCONFIRMED_TRANSACTION_HEIGHT);
@@ -386,8 +386,8 @@ std::error_code createTransfers(
       KeyOutput out;
       tx.getOutput(idx, out, amount);
 
-      CryptoNote::KeyPair in_ephemeral;
-      CryptoNote::generate_key_image_helper(
+      isocoin::KeyPair in_ephemeral;
+      isocoin::generate_key_image_helper(
         account,
         txPubKey,
         idx,

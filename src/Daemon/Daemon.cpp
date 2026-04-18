@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,12 +12,12 @@
 #include "Common/SignalHandler.h"
 #include "Common/PathTools.h"
 #include "crypto/hash.h"
-#include "CryptoNoteCore/Core.h"
-#include "CryptoNoteCore/CoreConfig.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/MinerConfig.h"
-#include "CryptoNoteProtocol/CryptoNoteProtocolHandler.h"
+#include "isocoinCore/Core.h"
+#include "isocoinCore/CoreConfig.h"
+#include "isocoinCore/isocoinTools.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/MinerConfig.h"
+#include "isocoinProtocol/isocoinProtocolHandler.h"
 #include "P2p/NetNode.h"
 #include "P2p/NetNodeConfig.h"
 #include "Rpc/RpcServer.h"
@@ -32,14 +32,14 @@
 #endif
 
 using Common::JsonValue;
-using namespace CryptoNote;
+using namespace isocoin;
 using namespace Logging;
 
 namespace po = boost::program_options;
 
 namespace
 {
-  const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", "Specify configuration file", std::string(CryptoNote::CRYPTONOTE_NAME) + ".conf"};
+  const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", "Specify configuration file", std::string(isocoin::isocoin_NAME) + ".conf"};
   const command_line::arg_descriptor<bool>        arg_os_version  = {"os-version", ""};
   const command_line::arg_descriptor<std::string> arg_log_file    = {"log-file", "", ""};
   const command_line::arg_descriptor<int>         arg_log_level   = {"log-level", "", 2}; // info level
@@ -53,8 +53,8 @@ bool command_line_preprocessor(const boost::program_options::variables_map& vm, 
 
 void print_genesis_tx_hex() {
   Logging::ConsoleLogger logger;
-  CryptoNote::Transaction tx = CryptoNote::CurrencyBuilder(logger).generateGenesisTransaction();
-  CryptoNote::BinaryArray txb = CryptoNote::toBinaryArray(tx);
+  isocoin::Transaction tx = isocoin::CurrencyBuilder(logger).generateGenesisTransaction();
+  isocoin::BinaryArray txb = isocoin::toBinaryArray(tx);
   std::string tx_hex = Common::toHex(txb);
 
   std::cout << "Insert this line into your coin configuration file as is: " << std::endl;
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 
       if (command_line::get_arg(vm, command_line::arg_help))
       {
-        std::cout << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG << ENDL << ENDL;
+        std::cout << isocoin::isocoin_NAME << " v" << PROJECT_VERSION_LONG << ENDL << ENDL;
         std::cout << desc_options << std::endl;
         return false;
       }
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
     // configure logging
     logManager.configure(buildLoggerConfiguration(cfgLogLevel, cfgLogFile));
 
-    logger(INFO) << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG;
+    logger(INFO) << isocoin::isocoin_NAME << " v" << PROJECT_VERSION_LONG;
 
     if (command_line_preprocessor(vm, logger)) {
       return 0;
@@ -186,21 +186,21 @@ int main(int argc, char* argv[])
     }
 
     //create objects and link them
-    CryptoNote::CurrencyBuilder currencyBuilder(logManager);
+    isocoin::CurrencyBuilder currencyBuilder(logManager);
     currencyBuilder.testnet(testnet_mode);
 
     try {
       currencyBuilder.currency();
     } catch (std::exception&) {
-      std::cout << "GENESIS_COINBASE_TX_HEX constant has an incorrect value. Please launch: " << CryptoNote::CRYPTONOTE_NAME << "d --" << arg_print_genesis_tx.name;
+      std::cout << "GENESIS_COINBASE_TX_HEX constant has an incorrect value. Please launch: " << isocoin::isocoin_NAME << "d --" << arg_print_genesis_tx.name;
       return 1;
     }
 
-    CryptoNote::Currency currency = currencyBuilder.currency();
-    CryptoNote::core ccore(currency, nullptr, logManager);
+    isocoin::Currency currency = currencyBuilder.currency();
+    isocoin::core ccore(currency, nullptr, logManager);
 
-    CryptoNote::Checkpoints checkpoints(logManager);
-    for (const auto& cp : CryptoNote::CHECKPOINTS) {
+    isocoin::Checkpoints checkpoints(logManager);
+    for (const auto& cp : isocoin::CHECKPOINTS) {
       checkpoints.add_checkpoint(cp.height, cp.blockId);
     }
 
@@ -230,12 +230,12 @@ int main(int argc, char* argv[])
 
     System::Dispatcher dispatcher;
 
-    CryptoNote::CryptoNoteProtocolHandler cprotocol(currency, dispatcher, ccore, nullptr, logManager);
-    CryptoNote::NodeServer p2psrv(dispatcher, cprotocol, logManager);
-    CryptoNote::RpcServer rpcServer(dispatcher, logManager, ccore, p2psrv, cprotocol);
+    isocoin::isocoinProtocolHandler cprotocol(currency, dispatcher, ccore, nullptr, logManager);
+    isocoin::NodeServer p2psrv(dispatcher, cprotocol, logManager);
+    isocoin::RpcServer rpcServer(dispatcher, logManager, ccore, p2psrv, cprotocol);
 
     cprotocol.set_p2p_endpoint(&p2psrv);
-    ccore.set_cryptonote_protocol(&cprotocol);
+    ccore.set_isocoin_protocol(&cprotocol);
     DaemonCommandsHandler dch(ccore, p2psrv, logManager);
 
     // initialize objects
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
     logger(INFO) << "Deinitializing p2p...";
     p2psrv.deinit();
 
-    ccore.set_cryptonote_protocol(NULL);
+    ccore.set_isocoin_protocol(NULL);
     cprotocol.set_p2p_endpoint(NULL);
 
   } catch (const std::exception& e) {
@@ -307,7 +307,7 @@ bool command_line_preprocessor(const boost::program_options::variables_map &vm, 
   bool exit = false;
 
   if (command_line::get_arg(vm, command_line::arg_version)) {
-    std::cout << CryptoNote::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG << ENDL;
+    std::cout << isocoin::isocoin_NAME << " v" << PROJECT_VERSION_LONG << ENDL;
     exit = true;
   }
   if (command_line::get_arg(vm, arg_os_version)) {

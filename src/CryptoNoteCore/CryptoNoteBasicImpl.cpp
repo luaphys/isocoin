@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "CryptoNoteBasicImpl.h"
-#include "CryptoNoteFormatUtils.h"
-#include "CryptoNoteTools.h"
-#include "CryptoNoteSerialization.h"
+#include "isocoinBasicImpl.h"
+#include "isocoinFormatUtils.h"
+#include "isocoinTools.h"
+#include "isocoinSerialization.h"
 
 #include "Common/Base58.h"
 #include "crypto/hash.h"
@@ -14,10 +14,10 @@
 using namespace Crypto;
 using namespace Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
   /************************************************************************/
-  /* CryptoNote helper functions                                          */
+  /* isocoin helper functions                                          */
   /************************************************************************/
   //-----------------------------------------------------------------------------------------------
   uint64_t getPenalizedAmount(uint64_t amount, size_t medianSize, size_t currentBlockSize) {
@@ -78,12 +78,12 @@ namespace CryptoNote {
       check_key(adr.viewPublicKey);
   }
   //-----------------------------------------------------------------------
-  bool operator ==(const CryptoNote::Transaction& a, const CryptoNote::Transaction& b) {
+  bool operator ==(const isocoin::Transaction& a, const isocoin::Transaction& b) {
     return getObjectHash(a) == getObjectHash(b);
   }
   //-----------------------------------------------------------------------
-  bool operator ==(const CryptoNote::Block& a, const CryptoNote::Block& b) {
-    return CryptoNote::get_block_hash(a) == CryptoNote::get_block_hash(b);
+  bool operator ==(const isocoin::Block& a, const isocoin::Block& b) {
+    return isocoin::get_block_hash(a) == isocoin::get_block_hash(b);
   }
 }
 

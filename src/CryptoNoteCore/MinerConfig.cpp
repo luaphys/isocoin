@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +6,7 @@
 
 #include "Common/CommandLine.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
 namespace {
 const command_line::arg_descriptor<std::string> arg_extra_messages =  {"extra-messages-file", "Specify file for extra messages to include into coinbase transactions", "", true};
@@ -38,4 +38,4 @@ void MinerConfig::init(const boost::program_options::variables_map& options) {
   }
 }
 
-} //namespace CryptoNote
+} //namespace isocoin

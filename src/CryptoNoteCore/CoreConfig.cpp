@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include "Common/Util.h"
 #include "Common/CommandLine.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
 CoreConfig::CoreConfig() {
   configFolder = Tools::getDefaultDataDirectory();
@@ -22,4 +22,4 @@ void CoreConfig::init(const boost::program_options::variables_map& options) {
 
 void CoreConfig::initOptions(boost::program_options::options_description& desc) {
 }
-} //namespace CryptoNote
+} //namespace isocoin

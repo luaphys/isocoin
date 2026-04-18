@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,31 +8,31 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "CryptoNoteCore/Account.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/TransactionExtra.h"
-#include "CryptoNoteCore/TransactionPool.h"
+#include "isocoinCore/Account.h"
+#include "isocoinCore/isocoinFormatUtils.h"
+#include "isocoinCore/isocoinTools.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/TransactionExtra.h"
+#include "isocoinCore/TransactionPool.h"
 
 #include <Logging/ConsoleLogger.h>
 #include <Logging/LoggerGroup.h>
 
 #include "TransactionApiHelpers.h"
 
-using namespace CryptoNote;
-using namespace CryptoNote;
+using namespace isocoin;
+using namespace isocoin;
 
-class TransactionValidator : public CryptoNote::ITransactionValidator {
-  virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock) override {
+class TransactionValidator : public isocoin::ITransactionValidator {
+  virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock) override {
     return true;
   }
 
-  virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) override {
+  virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) override {
     return true;
   }
 
-  virtual bool haveSpentKeyImages(const CryptoNote::Transaction& tx) override {
+  virtual bool haveSpentKeyImages(const isocoin::Transaction& tx) override {
     return false;
   }
 
@@ -55,7 +55,7 @@ class TestTransactionGenerator {
 
 public:
 
-  TestTransactionGenerator(const CryptoNote::Currency& currency, size_t ringSize) :
+  TestTransactionGenerator(const isocoin::Currency& currency, size_t ringSize) :
     m_currency(currency),
     m_ringSize(ringSize),
     m_miners(ringSize), 
@@ -120,7 +120,7 @@ public:
   std::vector<const Crypto::PublicKey*> m_public_key_ptrs;
 
   Logging::LoggerGroup m_logger;
-  const CryptoNote::Currency& m_currency;
+  const isocoin::Currency& m_currency;
   const size_t m_ringSize;
   AccountKeys m_realSenderKeys;
   uint64_t m_source_amount;
@@ -131,7 +131,7 @@ class tx_pool : public ::testing::Test {
 public:
 
   tx_pool() : 
-    currency(CryptoNote::CurrencyBuilder(logger).currency()) {}
+    currency(isocoin::CurrencyBuilder(logger).currency()) {}
 
 protected:
   virtual void SetUp() override {
@@ -145,7 +145,7 @@ protected:
 
 protected:
   Logging::ConsoleLogger logger;
-  CryptoNote::Currency currency;
+  isocoin::Currency currency;
   boost::filesystem::path m_configDir;
 };
 
@@ -153,7 +153,7 @@ namespace
 {
   static const size_t textMaxCumulativeSize = std::numeric_limits<size_t>::max();
 
-  void GenerateTransaction(const CryptoNote::Currency& currency, Transaction& tx, uint64_t fee, size_t outputs) {
+  void GenerateTransaction(const isocoin::Currency& currency, Transaction& tx, uint64_t fee, size_t outputs) {
     TestTransactionGenerator txGenerator(currency, 1);
     txGenerator.createSources();
     txGenerator.construct(txGenerator.m_source_amount, fee, outputs, tx);
@@ -166,14 +166,14 @@ namespace
     Validator validator;
     TimeProvider timeProvider;
 
-    TestPool(const CryptoNote::Currency& currency, Logging::ILogger& logger) :
+    TestPool(const isocoin::Currency& currency, Logging::ILogger& logger) :
       tx_memory_pool(currency, validator, timeProvider, logger) {}
   };
 
   class TxTestBase {
   public:
     TxTestBase(size_t ringSize) :
-      m_currency(CryptoNote::CurrencyBuilder(m_logger).currency()),
+      m_currency(isocoin::CurrencyBuilder(m_logger).currency()),
       txGenerator(m_currency, ringSize),
       pool(m_currency, validator, m_time, m_logger)
     {
@@ -185,8 +185,8 @@ namespace
     }
 
     Logging::ConsoleLogger m_logger;
-    CryptoNote::Currency m_currency;
-    CryptoNote::RealTimeProvider m_time;
+    isocoin::Currency m_currency;
+    isocoin::RealTimeProvider m_time;
     TestTransactionGenerator txGenerator;
     TransactionValidator validator;
     tx_memory_pool pool;
@@ -728,7 +728,7 @@ class TxPool_FillBlockTemplate : public tx_pool {
 public:
   TxPool_FillBlockTemplate() :
     tx_pool() {
-    currency = CryptoNote::CurrencyBuilder(logger).fusionTxMaxSize(TEST_FUSION_TX_MAX_SIZE).blockGrantedFullRewardZone(TEST_MEDIAN_SIZE).currency();
+    currency = isocoin::CurrencyBuilder(logger).fusionTxMaxSize(TEST_FUSION_TX_MAX_SIZE).blockGrantedFullRewardZone(TEST_MEDIAN_SIZE).currency();
   }
 
   void doTest(size_t poolOrdinaryTxCount, size_t poolFusionTxCount, size_t expectedBlockOrdinaryTxCount, size_t expectedBlockFusionTxCount) {

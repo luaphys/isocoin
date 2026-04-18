@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
-#include "CryptoNote.h"
+#include "isocoin.h"
 #include <Common/MemoryInputStream.h>
 #include <Common/VectorOutputStream.h>
 #include "Serialization/KVBinaryInputStreamSerializer.h"
@@ -14,7 +14,7 @@ namespace System {
 class TcpConnection;
 }
 
-namespace CryptoNote {
+namespace isocoin {
 
 enum class LevinError: int32_t {
   OK = 0,

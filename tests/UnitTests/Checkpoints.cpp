@@ -1,13 +1,13 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "gtest/gtest.h"
 
-#include "CryptoNoteCore/Checkpoints.h"
+#include "isocoinCore/Checkpoints.h"
 #include <Logging/LoggerGroup.h>
 
-using namespace CryptoNote;
+using namespace isocoin;
 
 TEST(checkpoints_is_alternative_block_allowed, handles_empty_checkpoins)
 {

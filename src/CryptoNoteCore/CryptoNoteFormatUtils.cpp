@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "CryptoNoteFormatUtils.h"
+#include "isocoinFormatUtils.h"
 
 #include <set>
 #include <Logging/LoggerRef.h>
@@ -12,18 +12,18 @@
 #include "Serialization/BinaryInputStreamSerializer.h"
 
 #include "Account.h"
-#include "CryptoNoteBasicImpl.h"
-#include "CryptoNoteSerialization.h"
+#include "isocoinBasicImpl.h"
+#include "isocoinSerialization.h"
 #include "TransactionExtra.h"
-#include "CryptoNoteTools.h"
+#include "isocoinTools.h"
 
-#include "CryptoNoteConfig.h"
+#include "isocoinConfig.h"
 
 using namespace Logging;
 using namespace Crypto;
 using namespace Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
 bool parseAndValidateTransactionFromBinaryArray(const BinaryArray& tx_blob, Transaction& tx, Hash& tx_hash, Hash& tx_prefix_hash) {
   if (!fromBinaryArray(tx, tx_blob)) {

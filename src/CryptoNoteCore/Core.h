@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,23 +8,23 @@
 #include <boost/program_options/variables_map.hpp>
 
 #include "P2p/NetNodeCommon.h"
-#include "CryptoNoteProtocol/CryptoNoteProtocolHandlerCommon.h"
+#include "isocoinProtocol/isocoinProtocolHandlerCommon.h"
 #include "Currency.h"
 #include "TransactionPool.h"
 #include "Blockchain.h"
-#include "CryptoNoteCore/IMinerHandler.h"
-#include "CryptoNoteCore/MinerConfig.h"
+#include "isocoinCore/IMinerHandler.h"
+#include "isocoinCore/MinerConfig.h"
 #include "ICore.h"
 #include "ICoreObserver.h"
 #include "Common/ObserverManager.h"
 
 #include "System/Dispatcher.h"
-#include "CryptoNoteCore/MessageQueue.h"
-#include "CryptoNoteCore/BlockchainMessages.h"
+#include "isocoinCore/MessageQueue.h"
+#include "isocoinCore/BlockchainMessages.h"
 
 #include <Logging/LoggerMessage.h>
 
-namespace CryptoNote {
+namespace isocoin {
 
   struct core_stat_info;
   class miner;
@@ -32,13 +32,13 @@ namespace CryptoNote {
 
   class core : public ICore, public IMinerHandler, public IBlockchainStorageObserver, public ITxPoolObserver {
    public:
-     core(const Currency& currency, i_cryptonote_protocol* pprotocol, Logging::ILogger& logger);
+     core(const Currency& currency, i_isocoin_protocol* pprotocol, Logging::ILogger& logger);
      ~core();
 
      bool on_idle() override;
-     virtual bool handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) override; //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+     virtual bool handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) override; //Deprecated. Should be removed with isocoinProtocolHandler.
      bool handle_incoming_block_blob(const BinaryArray& block_blob, block_verification_context& bvc, bool control_miner, bool relay_block) override;
-     virtual i_cryptonote_protocol* get_protocol() override {return m_pprotocol;}
+     virtual i_isocoin_protocol* get_protocol() override {return m_pprotocol;}
      const Currency& currency() const { return m_currency; }
 
      //-------------------- IMinerHandler -----------------------
@@ -56,7 +56,7 @@ namespace CryptoNote {
 
      // ICore
      virtual size_t addChain(const std::vector<const IBlock*>& chain) override;
-     virtual bool handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS_request& arg, NOTIFY_RESPONSE_GET_OBJECTS_request& rsp) override; //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+     virtual bool handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS_request& arg, NOTIFY_RESPONSE_GET_OBJECTS_request& rsp) override; //Deprecated. Should be removed with isocoinProtocolHandler.
      virtual bool getBackwardBlocksSizes(uint32_t fromHeight, std::vector<size_t>& sizes, size_t count) override;
      virtual bool getBlockSize(const Crypto::Hash& hash, size_t& size) override;
      virtual bool getAlreadyGeneratedCoins(const Crypto::Hash& hash, uint64_t& generatedCoins) override;
@@ -106,7 +106,7 @@ namespace CryptoNote {
      bool get_alternative_blocks(std::list<Block>& blocks);
      size_t get_alternative_blocks_count();
 
-     void set_cryptonote_protocol(i_cryptonote_protocol* pprotocol);
+     void set_isocoin_protocol(i_isocoin_protocol* pprotocol);
      void set_checkpoints(Checkpoints&& chk_pts);
 
      std::vector<Transaction> getPoolTransactions() override;
@@ -166,13 +166,13 @@ namespace CryptoNote {
 
      const Currency& m_currency;
      Logging::LoggerRef logger;
-     CryptoNote::RealTimeProvider m_timeProvider;
+     isocoin::RealTimeProvider m_timeProvider;
      tx_memory_pool m_mempool;
      Blockchain m_blockchain;
-     i_cryptonote_protocol* m_pprotocol;
+     i_isocoin_protocol* m_pprotocol;
      std::unique_ptr<miner> m_miner;
      std::string m_config_folder;
-     cryptonote_protocol_stub m_protocol_stub;
+     isocoin_protocol_stub m_protocol_stub;
      friend class tx_validate_inputs;
      std::atomic<bool> m_starter_message_showed;
      Tools::ObserverManager<ICoreObserver> m_observerManager;

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,13 +17,13 @@
 #include "TestBlockchainGenerator.h"
 
 using namespace PaymentService;
-using namespace CryptoNote;
+using namespace isocoin;
 
 class PaymentGateTest : public testing::Test {
 public:
 
   PaymentGateTest() : 
-    currency(CryptoNote::CurrencyBuilder(logger).currency()), 
+    currency(isocoin::CurrencyBuilder(logger).currency()), 
     generator(currency),
     nodeStub(generator) 
   {}
@@ -46,12 +46,12 @@ public:
 
 protected:  
   Logging::ConsoleLogger logger;
-  CryptoNote::Currency currency;
+  isocoin::Currency currency;
   TestBlockchainGenerator generator;
   INodeTrivialRefreshStub nodeStub;
   System::Dispatcher dispatcher;
 
-  std::unique_ptr<CryptoNote::IWallet> wallet;
+  std::unique_ptr<isocoin::IWallet> wallet;
 };
 
 

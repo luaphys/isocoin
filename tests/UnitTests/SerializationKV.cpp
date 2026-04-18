@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,9 +13,9 @@
 
 #include <array>
 
-using namespace CryptoNote;
+using namespace isocoin;
 
-namespace CryptoNote {
+namespace isocoin {
 
 struct TestElement {
   std::string name;
@@ -98,8 +98,8 @@ TEST(KVSerialize, Simple) {
   testData2.name = "bye";
   testData2.nonce = 54321;
 
-  std::string buf = CryptoNote::storeToBinaryKeyValue(testData1);
-  ASSERT_TRUE(CryptoNote::loadFromBinaryKeyValue(testData2, buf));
+  std::string buf = isocoin::storeToBinaryKeyValue(testData1);
+  ASSERT_TRUE(isocoin::loadFromBinaryKeyValue(testData2, buf));
   EXPECT_EQ(testData1, testData2);
 }
 
@@ -117,7 +117,7 @@ TEST(KVSerialize, BigCollection) {
 
   TestStruct ts2;
 
-  std::string buf = CryptoNote::storeToBinaryKeyValue(ts1);
-  ASSERT_TRUE(CryptoNote::loadFromBinaryKeyValue(ts2, buf));
+  std::string buf = isocoin::storeToBinaryKeyValue(ts1);
+  ASSERT_TRUE(isocoin::loadFromBinaryKeyValue(ts2, buf));
   EXPECT_EQ(ts1, ts2);
 }

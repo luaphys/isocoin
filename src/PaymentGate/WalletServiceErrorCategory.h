@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <system_error>
 
-namespace CryptoNote {
+namespace isocoin {
 namespace error {
 
 enum class WalletServiceErrorCode {
@@ -48,15 +48,15 @@ private:
 };
 
 } //namespace error
-} //namespace CryptoNote
+} //namespace isocoin
 
-inline std::error_code make_error_code(CryptoNote::error::WalletServiceErrorCode e) {
-  return std::error_code(static_cast<int>(e), CryptoNote::error::WalletServiceErrorCategory::INSTANCE);
+inline std::error_code make_error_code(isocoin::error::WalletServiceErrorCode e) {
+  return std::error_code(static_cast<int>(e), isocoin::error::WalletServiceErrorCategory::INSTANCE);
 }
 
 namespace std {
 
 template <>
-struct is_error_code_enum<CryptoNote::error::WalletServiceErrorCode>: public true_type {};
+struct is_error_code_enum<isocoin::error::WalletServiceErrorCode>: public true_type {};
 
 }

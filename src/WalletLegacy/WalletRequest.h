@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +15,7 @@
 #include <functional>
 #include <memory>
 
-namespace CryptoNote {
+namespace isocoin {
 
 class WalletRequest
 {
@@ -50,7 +50,7 @@ private:
 class WalletRelayTransactionRequest: public WalletRequest
 {
 public:
-  WalletRelayTransactionRequest(const CryptoNote::Transaction& tx, Callback cb) : m_tx(tx), m_cb(cb) {};
+  WalletRelayTransactionRequest(const isocoin::Transaction& tx, Callback cb) : m_tx(tx), m_cb(cb) {};
   virtual ~WalletRelayTransactionRequest() {};
 
   virtual void perform(INode& node, std::function<void (WalletRequest::Callback, std::error_code)> cb) override
@@ -59,8 +59,8 @@ public:
   }
 
 private:
-  CryptoNote::Transaction m_tx;
+  isocoin::Transaction m_tx;
   Callback m_cb;
 };
 
-} //namespace CryptoNote
+} //namespace isocoin

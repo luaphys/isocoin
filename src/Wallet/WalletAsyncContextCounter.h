@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,7 @@
 #include <mutex>
 #include <stdint.h>
 
-namespace CryptoNote {
+namespace isocoin {
 
 class WalletAsyncContextCounter
 {
@@ -27,4 +27,4 @@ private:
   std::mutex m_mutex;
 };
 
-} //namespace CryptoNote
+} //namespace isocoin

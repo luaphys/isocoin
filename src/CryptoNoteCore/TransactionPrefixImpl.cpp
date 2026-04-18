@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,14 +7,14 @@
 #include <numeric>
 #include <system_error>
 
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/TransactionApiExtra.h"
+#include "isocoinCore/isocoinBasic.h"
+#include "isocoinCore/TransactionApiExtra.h"
 #include "TransactionUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
+#include "isocoinCore/isocoinTools.h"
 
 using namespace Crypto;
 
-namespace CryptoNote {
+namespace isocoin {
 
 class TransactionPrefixImpl : public ITransactionReader {
 public:
@@ -171,11 +171,11 @@ void TransactionPrefixImpl::getOutput(size_t index, MultisignatureOutput& output
 }
 
 size_t TransactionPrefixImpl::getRequiredSignaturesCount(size_t inputIndex) const {
-  return ::CryptoNote::getRequiredSignaturesCount(getInputChecked(m_txPrefix, inputIndex));
+  return ::isocoin::getRequiredSignaturesCount(getInputChecked(m_txPrefix, inputIndex));
 }
 
 bool TransactionPrefixImpl::findOutputsToAccount(const AccountPublicAddress& addr, const SecretKey& viewSecretKey, std::vector<uint32_t>& outs, uint64_t& outputAmount) const {
-  return ::CryptoNote::findOutputsToAccount(m_txPrefix, addr, viewSecretKey, outs, outputAmount);
+  return ::isocoin::findOutputsToAccount(m_txPrefix, addr, viewSecretKey, outs, outputAmount);
 }
 
 bool TransactionPrefixImpl::validateInputs() const {

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,14 +7,14 @@
 #include "Common/MemoryInputStream.h"
 #include "Common/StreamTools.h"
 #include "Common/StringTools.h"
-#include "CryptoNoteTools.h"
+#include "isocoinTools.h"
 #include "Serialization/BinaryOutputStreamSerializer.h"
 #include "Serialization/BinaryInputStreamSerializer.h"
 
 using namespace Crypto;
 using namespace Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
 bool parseTransactionExtra(const std::vector<uint8_t> &transactionExtra, std::vector<TransactionExtraField> &transactionExtraFields) {
   transactionExtraFields.clear();
@@ -174,9 +174,9 @@ bool createTxExtraWithPaymentId(const std::string& paymentIdString, std::vector<
   }
 
   std::vector<uint8_t> extraNonce;
-  CryptoNote::setPaymentIdToTransactionExtraNonce(extraNonce, paymentIdBin);
+  isocoin::setPaymentIdToTransactionExtraNonce(extraNonce, paymentIdBin);
 
-  if (!CryptoNote::addExtraNonceToTransactionExtra(extra, extraNonce)) {
+  if (!isocoin::addExtraNonceToTransactionExtra(extra, extraNonce)) {
     return false;
   }
 

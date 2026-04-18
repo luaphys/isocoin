@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <system_error>
 
-namespace CryptoNote {
+namespace isocoin {
 namespace error {
 
 // custom error conditions enum type:
@@ -55,6 +55,6 @@ private:
 }
 }
  
-inline std::error_code make_error_code(CryptoNote::error::NodeErrorCodes e) {
-  return std::error_code(static_cast<int>(e), CryptoNote::error::NodeErrorCategory::INSTANCE);
+inline std::error_code make_error_code(isocoin::error::NodeErrorCodes e) {
+  return std::error_code(static_cast<int>(e), isocoin::error::NodeErrorCategory::INSTANCE);
 }

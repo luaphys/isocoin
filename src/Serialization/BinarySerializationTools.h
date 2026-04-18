@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <CryptoNote.h>
+#include <isocoin.h>
 #include "BinaryInputStreamSerializer.h"
 #include "BinaryOutputStreamSerializer.h"
 #include "Common/MemoryInputStream.h"
@@ -12,7 +12,7 @@
 
 #include <fstream>
 
-namespace CryptoNote {
+namespace isocoin {
 
 template <typename T>
 BinaryArray storeToBinary(const T& obj) {
@@ -41,7 +41,7 @@ bool storeToBinaryFile(const T& obj, const std::string& filename) {
 
     Common::StdOutputStream stream(dataFile);
     BinaryOutputStreamSerializer out(stream);
-    CryptoNote::serialize(const_cast<T&>(obj), out);
+    isocoin::serialize(const_cast<T&>(obj), out);
       
     if (dataFile.fail()) {
       return false;

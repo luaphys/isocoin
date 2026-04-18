@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,9 +11,9 @@
 #include "../Common/StringTools.h"
 
 #include "Account.h"
-#include "CryptoNoteBasicImpl.h"
-#include "CryptoNoteFormatUtils.h"
-#include "CryptoNoteTools.h"
+#include "isocoinBasicImpl.h"
+#include "isocoinFormatUtils.h"
+#include "isocoinTools.h"
 #include "TransactionExtra.h"
 
 #undef ERROR
@@ -21,7 +21,7 @@
 using namespace Logging;
 using namespace Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
 const std::vector<uint64_t> Currency::PRETTY_AMOUNTS = {
   1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -286,7 +286,7 @@ std::string Currency::accountAddressAsString(const AccountPublicAddress& account
 
 bool Currency::parseAccountAddressString(const std::string& str, AccountPublicAddress& addr) const {
   uint64_t prefix;
-  if (!CryptoNote::parseAccountAddressString(prefix, addr, str)) {
+  if (!isocoin::parseAccountAddressString(prefix, addr, str)) {
     return false;
   }
 
@@ -431,23 +431,23 @@ size_t Currency::getApproximateMaximumInputCount(size_t transactionSize, size_t 
 }
 
 CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
-  maxBlockNumber(parameters::CRYPTONOTE_MAX_BLOCK_NUMBER);
-  maxBlockBlobSize(parameters::CRYPTONOTE_MAX_BLOCK_BLOB_SIZE);
-  maxTxSize(parameters::CRYPTONOTE_MAX_TX_SIZE);
-  publicAddressBase58Prefix(parameters::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX);
-  minedMoneyUnlockWindow(parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
+  maxBlockNumber(parameters::isocoin_MAX_BLOCK_NUMBER);
+  maxBlockBlobSize(parameters::isocoin_MAX_BLOCK_BLOB_SIZE);
+  maxTxSize(parameters::isocoin_MAX_TX_SIZE);
+  publicAddressBase58Prefix(parameters::isocoin_PUBLIC_ADDRESS_BASE58_PREFIX);
+  minedMoneyUnlockWindow(parameters::isocoin_MINED_MONEY_UNLOCK_WINDOW);
 
   timestampCheckWindow(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW);
-  blockFutureTimeLimit(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT);
+  blockFutureTimeLimit(parameters::isocoin_BLOCK_FUTURE_TIME_LIMIT);
 
   moneySupply(parameters::MONEY_SUPPLY);
   emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);
 
-  rewardBlocksWindow(parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
-  blockGrantedFullRewardZone(parameters::CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE);
-  minerTxBlobReservedSize(parameters::CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE);
+  rewardBlocksWindow(parameters::isocoin_REWARD_BLOCKS_WINDOW);
+  blockGrantedFullRewardZone(parameters::isocoin_BLOCK_GRANTED_FULL_REWARD_ZONE);
+  minerTxBlobReservedSize(parameters::isocoin_COINBASE_BLOB_RESERVED_SIZE);
 
-  numberOfDecimalPlaces(parameters::CRYPTONOTE_DISPLAY_DECIMAL_POINT);
+  numberOfDecimalPlaces(parameters::isocoin_DISPLAY_DECIMAL_POINT);
 
   mininumFee(parameters::MINIMUM_FEE);
   defaultDustThreshold(parameters::DEFAULT_DUST_THRESHOLD);
@@ -461,29 +461,29 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   maxBlockSizeGrowthSpeedNumerator(parameters::MAX_BLOCK_SIZE_GROWTH_SPEED_NUMERATOR);
   maxBlockSizeGrowthSpeedDenominator(parameters::MAX_BLOCK_SIZE_GROWTH_SPEED_DENOMINATOR);
 
-  lockedTxAllowedDeltaSeconds(parameters::CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS);
-  lockedTxAllowedDeltaBlocks(parameters::CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
+  lockedTxAllowedDeltaSeconds(parameters::isocoin_LOCKED_TX_ALLOWED_DELTA_SECONDS);
+  lockedTxAllowedDeltaBlocks(parameters::isocoin_LOCKED_TX_ALLOWED_DELTA_BLOCKS);
 
-  mempoolTxLiveTime(parameters::CRYPTONOTE_MEMPOOL_TX_LIVETIME);
-  mempoolTxFromAltBlockLiveTime(parameters::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME);
-  numberOfPeriodsToForgetTxDeletedFromPool(parameters::CRYPTONOTE_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL);
+  mempoolTxLiveTime(parameters::isocoin_MEMPOOL_TX_LIVETIME);
+  mempoolTxFromAltBlockLiveTime(parameters::isocoin_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME);
+  numberOfPeriodsToForgetTxDeletedFromPool(parameters::isocoin_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL);
 
   fusionTxMaxSize(parameters::FUSION_TX_MAX_SIZE);
   fusionTxMinInputCount(parameters::FUSION_TX_MIN_INPUT_COUNT);
   fusionTxMinInOutCountRatio(parameters::FUSION_TX_MIN_IN_OUT_COUNT_RATIO);
 
-  blocksFileName(parameters::CRYPTONOTE_BLOCKS_FILENAME);
-  blocksCacheFileName(parameters::CRYPTONOTE_BLOCKSCACHE_FILENAME);
-  blockIndexesFileName(parameters::CRYPTONOTE_BLOCKINDEXES_FILENAME);
-  txPoolFileName(parameters::CRYPTONOTE_POOLDATA_FILENAME);
-  blockchinIndicesFileName(parameters::CRYPTONOTE_BLOCKCHAIN_INDICES_FILENAME);
+  blocksFileName(parameters::isocoin_BLOCKS_FILENAME);
+  blocksCacheFileName(parameters::isocoin_BLOCKSCACHE_FILENAME);
+  blockIndexesFileName(parameters::isocoin_BLOCKINDEXES_FILENAME);
+  txPoolFileName(parameters::isocoin_POOLDATA_FILENAME);
+  blockchinIndicesFileName(parameters::isocoin_BLOCKCHAIN_INDICES_FILENAME);
 
   testnet(false);
 }
 
 Transaction CurrencyBuilder::generateGenesisTransaction() {
-  CryptoNote::Transaction tx;
-  CryptoNote::AccountPublicAddress ac = boost::value_initialized<CryptoNote::AccountPublicAddress>();
+  isocoin::Transaction tx;
+  isocoin::AccountPublicAddress ac = boost::value_initialized<isocoin::AccountPublicAddress>();
   m_currency.constructMinerTx(0, 0, 0, 0, 0, ac, tx); // zero fee in genesis
 
   return tx;

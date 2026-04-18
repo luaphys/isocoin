@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,28 +6,28 @@
 
 #include <sstream>
 #include <unordered_set>
-#include "../CryptoNoteConfig.h"
+#include "../isocoinConfig.h"
 #include "../Common/CommandLine.h"
 #include "../Common/Util.h"
 #include "../Common/StringTools.h"
 #include "../crypto/crypto.h"
-#include "../CryptoNoteProtocol/CryptoNoteProtocolDefinitions.h"
+#include "../isocoinProtocol/isocoinProtocolDefinitions.h"
 #include "../Logging/LoggerRef.h"
 #include "../Rpc/CoreRpcServerCommandsDefinitions.h"
-#include "CryptoNoteFormatUtils.h"
-#include "CryptoNoteTools.h"
-#include "CryptoNoteStatInfo.h"
+#include "isocoinFormatUtils.h"
+#include "isocoinTools.h"
+#include "isocoinStatInfo.h"
 #include "Miner.h"
 #include "TransactionExtra.h"
 #include "IBlock.h"
 #undef ERROR
 
 using namespace Logging;
-#include "CryptoNoteCore/CoreConfig.h"
+#include "isocoinCore/CoreConfig.h"
 
 using namespace  Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
 class BlockWithTransactions : public IBlock {
 public:
@@ -51,14 +51,14 @@ private:
   friend class core;
 };
 
-core::core(const Currency& currency, i_cryptonote_protocol* pprotocol, Logging::ILogger& logger) :
+core::core(const Currency& currency, i_isocoin_protocol* pprotocol, Logging::ILogger& logger) :
 m_currency(currency),
 logger(logger, "core"),
 m_mempool(currency, m_blockchain, m_timeProvider, logger),
 m_blockchain(currency, m_mempool, logger),
 m_miner(new miner(currency, *this, logger)),
 m_starter_message_showed(false) {
-  set_cryptonote_protocol(pprotocol);
+  set_isocoin_protocol(pprotocol);
   m_blockchain.addObserver(this);
     m_mempool.addObserver(this);
   }
@@ -67,7 +67,7 @@ m_starter_message_showed(false) {
   m_blockchain.removeObserver(this);
 }
 
-void core::set_cryptonote_protocol(i_cryptonote_protocol* pprotocol) {
+void core::set_isocoin_protocol(i_isocoin_protocol* pprotocol) {
   if (pprotocol)
     m_pprotocol = pprotocol;
   else
@@ -183,7 +183,7 @@ size_t core::addChain(const std::vector<const IBlock*>& chain) {
   return blocksCounter;
 }
 
-bool core::handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) { //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+bool core::handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) { //Deprecated. Should be removed with isocoinProtocolHandler.
   tvc = boost::value_initialized<tx_verification_context>();
   //want to process all transactions sequentially
 
@@ -569,7 +569,7 @@ std::vector<Crypto::Hash> core::buildSparseChain(const Crypto::Hash& startBlockI
   return m_blockchain.buildSparseChain(startBlockId);
 }
 
-bool core::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp) { //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+bool core::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp) { //Deprecated. Should be removed with isocoinProtocolHandler.
   return m_blockchain.handleGetObjects(arg, rsp);
 }
 

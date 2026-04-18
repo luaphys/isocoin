@@ -1,16 +1,16 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "BlockchainIndices.h"
 
 #include "Common/StringTools.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "isocoinCore/isocoinTools.h"
+#include "isocoinCore/isocoinFormatUtils.h"
 #include "BlockchainExplorer/BlockchainExplorerDataBuilder.h"
-#include "CryptoNoteBasicImpl.h"
+#include "isocoinBasicImpl.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
 bool PaymentIdIndex::add(const Transaction& transaction) {
   Crypto::Hash paymentId;

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,14 +6,14 @@
 
 #include "Chaingen.h"
 
-#include "CryptoNoteCore/Currency.h"
+#include "isocoinCore/Currency.h"
 #include "TransactionBuilder.h"
 #include <Logging/LoggerGroup.h>
 
 class TestGenerator {
 public:
   TestGenerator(
-    const CryptoNote::Currency& currency, 
+    const isocoin::Currency& currency, 
     std::vector<test_event_entry>& eventsRef) :
       generator(currency),
       events(eventsRef) {
@@ -23,17 +23,17 @@ public:
     lastBlock = genesisBlock;
   }
 
-  const CryptoNote::Currency& currency() const { return generator.currency(); }
+  const isocoin::Currency& currency() const { return generator.currency(); }
 
-  void makeNextBlock(const std::list<CryptoNote::Transaction>& txs = std::list<CryptoNote::Transaction>()) {
-    CryptoNote::Block block;
+  void makeNextBlock(const std::list<isocoin::Transaction>& txs = std::list<isocoin::Transaction>()) {
+    isocoin::Block block;
     generator.constructBlock(block, lastBlock, minerAccount, txs);
     events.push_back(block);
     lastBlock = block;
   }
 
-  void makeNextBlock(const CryptoNote::Transaction& tx) {
-    std::list<CryptoNote::Transaction> txs;
+  void makeNextBlock(const isocoin::Transaction& tx) {
+    std::list<isocoin::Transaction> txs;
     txs.push_back(tx);
     makeNextBlock(txs);
   }
@@ -42,19 +42,19 @@ public:
     generateBlocks(currency().minedMoneyUnlockWindow());
   }
 
-  void generateBlocks(size_t count, uint8_t majorVersion = CryptoNote::BLOCK_MAJOR_VERSION_1) {
+  void generateBlocks(size_t count, uint8_t majorVersion = isocoin::BLOCK_MAJOR_VERSION_1) {
     while (count--) {
-      CryptoNote::Block next;
+      isocoin::Block next;
       generator.constructBlockManually(next, lastBlock, minerAccount, test_generator::bf_major_ver, majorVersion);
       lastBlock = next;
       events.push_back(next);
     }
   }
 
-  TransactionBuilder createTxBuilder(const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to, uint64_t amount, uint64_t fee) {
+  TransactionBuilder createTxBuilder(const isocoin::AccountBase& from, const isocoin::AccountBase& to, uint64_t amount, uint64_t fee) {
 
-    std::vector<CryptoNote::TransactionSourceEntry> sources;
-    std::vector<CryptoNote::TransactionDestinationEntry> destinations;
+    std::vector<isocoin::TransactionSourceEntry> sources;
+    std::vector<isocoin::TransactionDestinationEntry> destinations;
 
     fillTxSourcesAndDestinations(sources, destinations, from, to, amount, fee);
 
@@ -67,16 +67,16 @@ public:
   }
 
   void fillTxSourcesAndDestinations(
-    std::vector<CryptoNote::TransactionSourceEntry>& sources, 
-    std::vector<CryptoNote::TransactionDestinationEntry>& destinations,
-    const CryptoNote::AccountBase& from, const CryptoNote::AccountBase& to, uint64_t amount, uint64_t fee, size_t nmix = 0) {
+    std::vector<isocoin::TransactionSourceEntry>& sources, 
+    std::vector<isocoin::TransactionDestinationEntry>& destinations,
+    const isocoin::AccountBase& from, const isocoin::AccountBase& to, uint64_t amount, uint64_t fee, size_t nmix = 0) {
     fill_tx_sources_and_destinations(events, lastBlock, from, to, amount, fee, nmix, sources, destinations);
   }
 
   void constructTxToKey(
-    CryptoNote::Transaction& tx,
-    const CryptoNote::AccountBase& from,
-    const CryptoNote::AccountBase& to,
+    isocoin::Transaction& tx,
+    const isocoin::AccountBase& from,
+    const isocoin::AccountBase& to,
     uint64_t amount,
     uint64_t fee,
     size_t nmix = 0) {
@@ -103,8 +103,8 @@ public:
 
   Logging::LoggerGroup logger;
   test_generator generator;
-  CryptoNote::Block genesisBlock;
-  CryptoNote::Block lastBlock;
-  CryptoNote::AccountBase minerAccount;
+  isocoin::Block genesisBlock;
+  isocoin::Block lastBlock;
+  isocoin::AccountBase minerAccount;
   std::vector<test_event_entry>& events;
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,7 +9,7 @@
 
 #include <boost/program_options.hpp>
 
-namespace CryptoNote {
+namespace isocoin {
 
 class MinerConfig {
 public:
@@ -23,4 +23,4 @@ public:
   uint32_t miningThreads;
 };
 
-} //namespace CryptoNote
+} //namespace isocoin

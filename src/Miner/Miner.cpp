@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,11 +7,11 @@
 #include <functional>
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
+#include "isocoinCore/isocoinFormatUtils.h"
 
 #include <System/InterruptedException.h>
 
-namespace CryptoNote {
+namespace isocoin {
 
 Miner::Miner(System::Dispatcher& dispatcher, Logging::ILogger& logger) :
   m_dispatcher(dispatcher),
@@ -141,4 +141,4 @@ bool Miner::setStateBlockFound() {
   }
 }
 
-} //namespace CryptoNote
+} //namespace isocoin

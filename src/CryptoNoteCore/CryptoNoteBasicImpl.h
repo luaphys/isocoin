@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,10 +7,10 @@
 #include "Common/StringTools.h"
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
-#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "isocoinCore/isocoinBasic.h"
 
 
-namespace CryptoNote {
+namespace isocoin {
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
@@ -24,15 +24,15 @@ namespace CryptoNote {
   };
 
   /************************************************************************/
-  /* CryptoNote helper functions                                          */
+  /* isocoin helper functions                                          */
   /************************************************************************/
   uint64_t getPenalizedAmount(uint64_t amount, size_t medianSize, size_t currentBlockSize);
   std::string getAccountAddressAsStr(uint64_t prefix, const AccountPublicAddress& adr);
   bool parseAccountAddressString(uint64_t& prefix, AccountPublicAddress& adr, const std::string& str);
   bool is_coinbase(const Transaction& tx);
 
-  bool operator ==(const CryptoNote::Transaction& a, const CryptoNote::Transaction& b);
-  bool operator ==(const CryptoNote::Block& a, const CryptoNote::Block& b);
+  bool operator ==(const isocoin::Transaction& a, const isocoin::Transaction& b);
+  bool operator ==(const isocoin::Block& a, const isocoin::Block& b);
 }
 
 template <class T>

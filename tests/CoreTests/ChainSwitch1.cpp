@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "ChainSwitch1.h"
 
-using namespace CryptoNote;
+using namespace isocoin;
 
 
 gen_chain_switch_1::gen_chain_switch_1()
@@ -91,7 +91,7 @@ bool gen_chain_switch_1::generate(std::vector<test_event_entry>& events) const
 
 
 //-----------------------------------------------------------------------------------------------------
-bool gen_chain_switch_1::check_split_not_switched(CryptoNote::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
+bool gen_chain_switch_1::check_split_not_switched(isocoin::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_chain_switch_1::check_split_not_switched");
 
@@ -108,7 +108,7 @@ bool gen_chain_switch_1::check_split_not_switched(CryptoNote::core& c, size_t ev
 
   CHECK_EQ(2, c.get_alternative_blocks_count());
 
-  std::vector<CryptoNote::Block> chain;
+  std::vector<isocoin::Block> chain;
   map_hash2tx_t mtx;
   r = find_block_chain(events, chain, mtx, get_block_hash(blocks.back()));
   CHECK_TEST_CONDITION(r);
@@ -132,7 +132,7 @@ bool gen_chain_switch_1::check_split_not_switched(CryptoNote::core& c, size_t ev
 }
 
 //-----------------------------------------------------------------------------------------------------
-bool gen_chain_switch_1::check_split_switched(CryptoNote::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
+bool gen_chain_switch_1::check_split_switched(isocoin::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_chain_switch_1::check_split_switched");
 
@@ -156,7 +156,7 @@ bool gen_chain_switch_1::check_split_switched(CryptoNote::core& c, size_t ev_ind
     CHECK_TEST_CONDITION(m_chain_1.end() != std::find(m_chain_1.begin(), m_chain_1.end(), b));
   }
 
-  std::vector<CryptoNote::Block> chain;
+  std::vector<isocoin::Block> chain;
   map_hash2tx_t mtx;
   r = find_block_chain(events, chain, mtx, get_block_hash(blocks.back()));
   CHECK_TEST_CONDITION(r);

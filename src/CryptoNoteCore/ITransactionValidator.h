@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
-#include "CryptoNoteCore/CryptoNoteBasic.h"
+#include "isocoinCore/isocoinBasic.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
   struct BlockInfo {
     uint32_t height;
@@ -18,11 +18,11 @@ namespace CryptoNote {
 
     void clear() {
       height = 0;
-      id = CryptoNote::NULL_HASH;
+      id = isocoin::NULL_HASH;
     }
 
     bool empty() const {
-      return id == CryptoNote::NULL_HASH;
+      return id == isocoin::NULL_HASH;
     }
   };
 
@@ -30,9 +30,9 @@ namespace CryptoNote {
   public:
     virtual ~ITransactionValidator() {}
     
-    virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock) = 0;
-    virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) = 0;
-    virtual bool haveSpentKeyImages(const CryptoNote::Transaction& tx) = 0;
+    virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock) = 0;
+    virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) = 0;
+    virtual bool haveSpentKeyImages(const isocoin::Transaction& tx) = 0;
     virtual bool checkTransactionSize(size_t blobSize) = 0;
   };
 

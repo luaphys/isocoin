@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <memory>
 
-namespace CryptoNote {
+namespace isocoin {
 class Currency;
 }
 
@@ -19,7 +19,7 @@ namespace PaymentService {
 
 class WalletFactory {
 public:
-  static CryptoNote::IWallet* createWallet(const CryptoNote::Currency& currency, CryptoNote::INode& node, System::Dispatcher& dispatcher);
+  static isocoin::IWallet* createWallet(const isocoin::Currency& currency, isocoin::INode& node, System::Dispatcher& dispatcher);
 private:
   WalletFactory();
   ~WalletFactory();

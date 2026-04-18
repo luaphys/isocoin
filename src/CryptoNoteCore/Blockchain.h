@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,33 +11,33 @@
 
 #include "Common/ObserverManager.h"
 #include "Common/Util.h"
-#include "CryptoNoteCore/BlockIndex.h"
-#include "CryptoNoteCore/Checkpoints.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/IBlockchainStorageObserver.h"
-#include "CryptoNoteCore/ITransactionValidator.h"
-#include "CryptoNoteCore/SwappedVector.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/TransactionPool.h"
-#include "CryptoNoteCore/BlockchainIndices.h"
+#include "isocoinCore/BlockIndex.h"
+#include "isocoinCore/Checkpoints.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/IBlockchainStorageObserver.h"
+#include "isocoinCore/ITransactionValidator.h"
+#include "isocoinCore/SwappedVector.h"
+#include "isocoinCore/isocoinFormatUtils.h"
+#include "isocoinCore/TransactionPool.h"
+#include "isocoinCore/BlockchainIndices.h"
 
-#include "CryptoNoteCore/MessageQueue.h"
-#include "CryptoNoteCore/BlockchainMessages.h"
-#include "CryptoNoteCore/IntrusiveLinkedList.h"
+#include "isocoinCore/MessageQueue.h"
+#include "isocoinCore/BlockchainMessages.h"
+#include "isocoinCore/IntrusiveLinkedList.h"
 
 #include <Logging/LoggerRef.h>
 
 #undef ERROR
 
-namespace CryptoNote {
+namespace isocoin {
   struct NOTIFY_REQUEST_GET_OBJECTS_request;
   struct NOTIFY_RESPONSE_GET_OBJECTS_request;
   struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request;
   struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response;
   struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount;
 
-  using CryptoNote::BlockInfo;
-  class Blockchain : public CryptoNote::ITransactionValidator {
+  using isocoin::BlockInfo;
+  class Blockchain : public isocoin::ITransactionValidator {
   public:
     Blockchain(const Currency& currency, tx_memory_pool& tx_pool, Logging::ILogger& logger);
 
@@ -45,9 +45,9 @@ namespace CryptoNote {
     bool removeObserver(IBlockchainStorageObserver* observer);
 
     // ITransactionValidator
-    virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock) override;
-    virtual bool checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) override;
-    virtual bool haveSpentKeyImages(const CryptoNote::Transaction& tx) override;
+    virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock) override;
+    virtual bool checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) override;
+    virtual bool haveSpentKeyImages(const isocoin::Transaction& tx) override;
     virtual bool checkTransactionSize(size_t blobSize) override;
 
     bool init() { return init(Tools::getDefaultDataDirectory(), true); }
@@ -85,7 +85,7 @@ namespace CryptoNote {
     uint32_t findBlockchainSupplement(const std::vector<Crypto::Hash>& qblock_ids); // !!!!
     std::vector<Crypto::Hash> findBlockchainSupplement(const std::vector<Crypto::Hash>& remoteBlockIds, size_t maxCount,
       uint32_t& totalBlockCount, uint32_t& startBlockIndex);
-    bool handleGetObjects(NOTIFY_REQUEST_GET_OBJECTS_request& arg, NOTIFY_RESPONSE_GET_OBJECTS_request& rsp); //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+    bool handleGetObjects(NOTIFY_REQUEST_GET_OBJECTS_request& arg, NOTIFY_RESPONSE_GET_OBJECTS_request& rsp); //Deprecated. Should be removed with isocoinProtocolHandler.
     bool getRandomOutsByAmount(const COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request& req, COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response& res);
     bool getBackwardBlocksSize(size_t from_height, std::vector<size_t>& sz, size_t count);
     bool getTransactionOutputGlobalIndexes(const Crypto::Hash& tx_id, std::vector<uint32_t>& indexs);
@@ -241,7 +241,7 @@ namespace CryptoNote {
     friend class BlockchainIndicesSerializer;
 
     Blocks m_blocks;
-    CryptoNote::BlockIndex m_blockIndex;
+    isocoin::BlockIndex m_blockIndex;
     TransactionMap m_transactionMap;
     MultisignatureOutputsContainer m_multisignatureOutputs;
 

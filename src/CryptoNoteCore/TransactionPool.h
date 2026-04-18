@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,24 +21,24 @@
 #include "Common/ObserverManager.h"
 #include "crypto/hash.h"
 
-#include "CryptoNoteCore/CryptoNoteBasic.h"
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/ITimeProvider.h"
-#include "CryptoNoteCore/ITransactionValidator.h"
-#include "CryptoNoteCore/ITxPoolObserver.h"
-#include "CryptoNoteCore/VerificationContext.h"
-#include "CryptoNoteCore/BlockchainIndices.h"
+#include "isocoinCore/isocoinBasic.h"
+#include "isocoinCore/isocoinBasicImpl.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/ITimeProvider.h"
+#include "isocoinCore/ITransactionValidator.h"
+#include "isocoinCore/ITxPoolObserver.h"
+#include "isocoinCore/VerificationContext.h"
+#include "isocoinCore/BlockchainIndices.h"
 
 #include <Logging/LoggerRef.h>
 
-namespace CryptoNote {
+namespace isocoin {
 
   class ISerializer;
 
   class OnceInTimeInterval {
   public:
-    OnceInTimeInterval(unsigned interval, CryptoNote::ITimeProvider& timeProvider)
+    OnceInTimeInterval(unsigned interval, isocoin::ITimeProvider& timeProvider)
       : m_interval(interval), m_timeProvider(timeProvider) {
       m_lastWorkedTime = 0;
     }
@@ -59,10 +59,10 @@ namespace CryptoNote {
   private:
     time_t m_lastWorkedTime;
     unsigned m_interval;
-    CryptoNote::ITimeProvider& m_timeProvider;
+    isocoin::ITimeProvider& m_timeProvider;
   };
 
-  using CryptoNote::BlockInfo;
+  using isocoin::BlockInfo;
   using namespace boost::multi_index;
 
   /************************************************************************/
@@ -71,9 +71,9 @@ namespace CryptoNote {
   class tx_memory_pool: boost::noncopyable {
   public:
     tx_memory_pool(
-      const CryptoNote::Currency& currency, 
-      CryptoNote::ITransactionValidator& validator,
-      CryptoNote::ITimeProvider& timeProvider,
+      const isocoin::Currency& currency, 
+      isocoin::ITransactionValidator& validator,
+      isocoin::ITimeProvider& timeProvider,
       Logging::ILogger& log);
 
     bool addObserver(ITxPoolObserver* observer);
@@ -184,15 +184,15 @@ namespace CryptoNote {
     void buildIndices();
 
     Tools::ObserverManager<ITxPoolObserver> m_observerManager;
-    const CryptoNote::Currency& m_currency;
+    const isocoin::Currency& m_currency;
     OnceInTimeInterval m_txCheckInterval;
     mutable std::recursive_mutex m_transactions_lock;
     key_images_container m_spent_key_images;
     GlobalOutputsContainer m_spentOutputs;
 
     std::string m_config_folder;
-    CryptoNote::ITransactionValidator& m_validator;
-    CryptoNote::ITimeProvider& m_timeProvider;
+    isocoin::ITransactionValidator& m_validator;
+    isocoin::ITimeProvider& m_timeProvider;
 
     tx_container_t m_transactions;  
     tx_container_t::nth_index<1>::type& m_fee_index;

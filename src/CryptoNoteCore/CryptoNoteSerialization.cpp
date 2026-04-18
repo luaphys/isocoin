@@ -1,8 +1,8 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "CryptoNoteSerialization.h"
+#include "isocoinSerialization.h"
 
 #include <algorithm>
 #include <sstream>
@@ -20,16 +20,16 @@
 #include "crypto/crypto.h"
 
 #include "Account.h"
-#include "CryptoNoteConfig.h"
-#include "CryptoNoteFormatUtils.h"
-#include "CryptoNoteTools.h"
+#include "isocoinConfig.h"
+#include "isocoinFormatUtils.h"
+#include "isocoinTools.h"
 #include "TransactionExtra.h"
 
 using namespace Common;
 
 namespace {
 
-using namespace CryptoNote;
+using namespace isocoin;
 using namespace Common;
 
 size_t getSignaturesCount(const TransactionInput& input) {
@@ -43,41 +43,41 @@ size_t getSignaturesCount(const TransactionInput& input) {
 }
 
 struct BinaryVariantTagGetter: boost::static_visitor<uint8_t> {
-  uint8_t operator()(const CryptoNote::BaseInput) { return  0xff; }
-  uint8_t operator()(const CryptoNote::KeyInput) { return  0x2; }
-  uint8_t operator()(const CryptoNote::MultisignatureInput) { return  0x3; }
-  uint8_t operator()(const CryptoNote::KeyOutput) { return  0x2; }
-  uint8_t operator()(const CryptoNote::MultisignatureOutput) { return  0x3; }
-  uint8_t operator()(const CryptoNote::Transaction) { return  0xcc; }
-  uint8_t operator()(const CryptoNote::Block) { return  0xbb; }
+  uint8_t operator()(const isocoin::BaseInput) { return  0xff; }
+  uint8_t operator()(const isocoin::KeyInput) { return  0x2; }
+  uint8_t operator()(const isocoin::MultisignatureInput) { return  0x3; }
+  uint8_t operator()(const isocoin::KeyOutput) { return  0x2; }
+  uint8_t operator()(const isocoin::MultisignatureOutput) { return  0x3; }
+  uint8_t operator()(const isocoin::Transaction) { return  0xcc; }
+  uint8_t operator()(const isocoin::Block) { return  0xbb; }
 };
 
 struct VariantSerializer : boost::static_visitor<> {
-  VariantSerializer(CryptoNote::ISerializer& serializer, const std::string& name) : s(serializer), name(name) {}
+  VariantSerializer(isocoin::ISerializer& serializer, const std::string& name) : s(serializer), name(name) {}
 
   template <typename T>
   void operator() (T& param) { s(param, name); }
 
-  CryptoNote::ISerializer& s;
+  isocoin::ISerializer& s;
   std::string name;
 };
 
-void getVariantValue(CryptoNote::ISerializer& serializer, uint8_t tag, CryptoNote::TransactionInput& in) {
+void getVariantValue(isocoin::ISerializer& serializer, uint8_t tag, isocoin::TransactionInput& in) {
   switch(tag) {
   case 0xff: {
-    CryptoNote::BaseInput v;
+    isocoin::BaseInput v;
     serializer(v, "value");
     in = v;
     break;
   }
   case 0x2: {
-    CryptoNote::KeyInput v;
+    isocoin::KeyInput v;
     serializer(v, "value");
     in = v;
     break;
   }
   case 0x3: {
-    CryptoNote::MultisignatureInput v;
+    isocoin::MultisignatureInput v;
     serializer(v, "value");
     in = v;
     break;
@@ -87,16 +87,16 @@ void getVariantValue(CryptoNote::ISerializer& serializer, uint8_t tag, CryptoNot
   }
 }
 
-void getVariantValue(CryptoNote::ISerializer& serializer, uint8_t tag, CryptoNote::TransactionOutputTarget& out) {
+void getVariantValue(isocoin::ISerializer& serializer, uint8_t tag, isocoin::TransactionOutputTarget& out) {
   switch(tag) {
   case 0x2: {
-    CryptoNote::KeyOutput v;
+    isocoin::KeyOutput v;
     serializer(v, "data");
     out = v;
     break;
   }
   case 0x3: {
-    CryptoNote::MultisignatureOutput v;
+    isocoin::MultisignatureOutput v;
     serializer(v, "data");
     out = v;
     break;
@@ -107,11 +107,11 @@ void getVariantValue(CryptoNote::ISerializer& serializer, uint8_t tag, CryptoNot
 }
 
 template <typename T>
-bool serializePod(T& v, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serializePod(T& v, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializer.binary(&v, sizeof(v), name);
 }
 
-bool serializeVarintVector(std::vector<uint32_t>& vector, CryptoNote::ISerializer& serializer, Common::StringView name) {
+bool serializeVarintVector(std::vector<uint32_t>& vector, isocoin::ISerializer& serializer, Common::StringView name) {
   size_t size = vector.size();
   
   if (!serializer.beginArray(size, name)) {
@@ -133,41 +133,41 @@ bool serializeVarintVector(std::vector<uint32_t>& vector, CryptoNote::ISerialize
 
 namespace Crypto {
 
-bool serialize(PublicKey& pubKey, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(PublicKey& pubKey, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(pubKey, name, serializer);
 }
 
-bool serialize(SecretKey& secKey, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(SecretKey& secKey, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(secKey, name, serializer);
 }
 
-bool serialize(Hash& h, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(Hash& h, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(h, name, serializer);
 }
 
-bool serialize(KeyImage& keyImage, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(KeyImage& keyImage, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(keyImage, name, serializer);
 }
 
-bool serialize(chacha8_iv& chacha, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(chacha8_iv& chacha, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(chacha, name, serializer);
 }
 
-bool serialize(Signature& sig, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(Signature& sig, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(sig, name, serializer);
 }
 
-bool serialize(EllipticCurveScalar& ecScalar, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(EllipticCurveScalar& ecScalar, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(ecScalar, name, serializer);
 }
 
-bool serialize(EllipticCurvePoint& ecPoint, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(EllipticCurvePoint& ecPoint, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializePod(ecPoint, name, serializer);
 }
 
 }
 
-namespace CryptoNote {
+namespace isocoin {
 
 void serialize(TransactionPrefix& txP, ISerializer& serializer) {
   serializer(txP.version, "version");
@@ -331,4 +331,4 @@ void serialize(KeyPair& keyPair, ISerializer& serializer) {
 }
 
 
-} //namespace CryptoNote
+} //namespace isocoin

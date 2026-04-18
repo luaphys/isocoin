@@ -1,17 +1,17 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "gtest/gtest.h"
 
 #include "crypto/crypto.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/TransactionApi.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/TransactionApi.h"
 #include "Logging/ConsoleLogger.h"
 
 #include "TransactionApiHelpers.h"
 
-using namespace CryptoNote;
+using namespace isocoin;
 
 namespace {
 const size_t TEST_FUSION_TX_MAX_SIZE = 6000;

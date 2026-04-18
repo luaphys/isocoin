@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,13 +7,13 @@
 #include <numeric>
 #include <random>
 
-#include "CryptoNoteCore/TransactionApi.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h" // TODO: delete
-#include "CryptoNoteCore/Account.h"
+#include "isocoinCore/TransactionApi.h"
+#include "isocoinCore/isocoinFormatUtils.h" // TODO: delete
+#include "isocoinCore/Account.h"
 #include "crypto/crypto.h"
 #include "TransactionApiHelpers.h"
 
-using namespace CryptoNote;
+using namespace isocoin;
 
 namespace {
  
@@ -64,7 +64,7 @@ namespace {
     TransactionTypes::InputKeyInfo createInputInfo(uint64_t amount) {
       TransactionTypes::InputKeyInfo info;
 
-      CryptoNote::KeyPair srcTxKeys = CryptoNote::generateKeyPair();
+      isocoin::KeyPair srcTxKeys = isocoin::generateKeyPair();
 
       PublicKey targetKey;
 

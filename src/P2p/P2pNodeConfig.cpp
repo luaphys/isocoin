@@ -1,13 +1,13 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "P2pNodeConfig.h"
 #include "P2pNetworks.h"
 
-#include <CryptoNoteConfig.h>
+#include <isocoinConfig.h>
 
-namespace CryptoNote {
+namespace isocoin {
 
 namespace {
 
@@ -22,7 +22,7 @@ P2pNodeConfig::P2pNodeConfig() :
   handshakeTimeout(std::chrono::milliseconds(P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT)),
   connectInterval(P2P_DEFAULT_CONNECT_INTERVAL),
   connectTimeout(std::chrono::milliseconds(P2P_DEFAULT_CONNECTION_TIMEOUT)),
-  networkId(CRYPTONOTE_NETWORK),
+  networkId(isocoin_NETWORK),
   expectedOutgoingConnectionsCount(P2P_DEFAULT_CONNECTIONS_COUNT),
   whiteListConnectionsPercent(P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT),
   peerListConnectRange(P2P_DEFAULT_CONNECT_RANGE),

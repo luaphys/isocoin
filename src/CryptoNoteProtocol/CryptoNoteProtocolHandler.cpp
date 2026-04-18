@@ -1,30 +1,30 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "CryptoNoteProtocolHandler.h"
+#include "isocoinProtocolHandler.h"
 
 #include <future>
 #include <boost/scope_exit.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <System/Dispatcher.h>
 
-#include "CryptoNoteCore/CryptoNoteBasicImpl.h"
-#include "CryptoNoteCore/CryptoNoteFormatUtils.h"
-#include "CryptoNoteCore/CryptoNoteTools.h"
-#include "CryptoNoteCore/Currency.h"
-#include "CryptoNoteCore/VerificationContext.h"
+#include "isocoinCore/isocoinBasicImpl.h"
+#include "isocoinCore/isocoinFormatUtils.h"
+#include "isocoinCore/isocoinTools.h"
+#include "isocoinCore/Currency.h"
+#include "isocoinCore/VerificationContext.h"
 #include "P2p/LevinProtocol.h"
 
 using namespace Logging;
 using namespace Common;
 
-namespace CryptoNote {
+namespace isocoin {
 
 namespace {
 
 template<class t_parametr>
-bool post_notify(IP2pEndpoint& p2p, typename t_parametr::request& arg, const CryptoNoteConnectionContext& context) {
+bool post_notify(IP2pEndpoint& p2p, typename t_parametr::request& arg, const isocoinConnectionContext& context) {
   return p2p.invoke_notify_to_peer(t_parametr::ID, LevinProtocol::encode(arg), context);
 }
 
@@ -35,7 +35,7 @@ void relay_post_notify(IP2pEndpoint& p2p, typename t_parametr::request& arg, con
 
 }
 
-CryptoNoteProtocolHandler::CryptoNoteProtocolHandler(const Currency& currency, System::Dispatcher& dispatcher, ICore& rcore, IP2pEndpoint* p_net_layout, Logging::ILogger& log) :
+isocoinProtocolHandler::isocoinProtocolHandler(const Currency& currency, System::Dispatcher& dispatcher, ICore& rcore, IP2pEndpoint* p_net_layout, Logging::ILogger& log) :
   m_dispatcher(dispatcher),
   m_currency(currency),
   m_core(rcore),
@@ -51,21 +51,21 @@ CryptoNoteProtocolHandler::CryptoNoteProtocolHandler(const Currency& currency, S
   }
 }
 
-size_t CryptoNoteProtocolHandler::getPeerCount() const {
+size_t isocoinProtocolHandler::getPeerCount() const {
   return m_peersCount;
 }
 
-void CryptoNoteProtocolHandler::set_p2p_endpoint(IP2pEndpoint* p2p) {
+void isocoinProtocolHandler::set_p2p_endpoint(IP2pEndpoint* p2p) {
   if (p2p)
     m_p2p = p2p;
   else
     m_p2p = &m_p2p_stub;
 }
 
-void CryptoNoteProtocolHandler::onConnectionOpened(CryptoNoteConnectionContext& context) {
+void isocoinProtocolHandler::onConnectionOpened(isocoinConnectionContext& context) {
 }
 
-void CryptoNoteProtocolHandler::onConnectionClosed(CryptoNoteConnectionContext& context) {
+void isocoinProtocolHandler::onConnectionClosed(isocoinConnectionContext& context) {
   bool updated = false;
   {
     std::lock_guard<std::mutex> lock(m_observedHeightMutex);
@@ -78,23 +78,23 @@ void CryptoNoteProtocolHandler::onConnectionClosed(CryptoNoteConnectionContext& 
 
   if (updated) {
     logger(TRACE) << "Observed height updated: " << m_observedHeight;
-    m_observerManager.notify(&ICryptoNoteProtocolObserver::lastKnownBlockHeightUpdated, m_observedHeight);
+    m_observerManager.notify(&IisocoinProtocolObserver::lastKnownBlockHeightUpdated, m_observedHeight);
   }
 
-  if (context.m_state != CryptoNoteConnectionContext::state_befor_handshake) {
+  if (context.m_state != isocoinConnectionContext::state_befor_handshake) {
     m_peersCount--;
-    m_observerManager.notify(&ICryptoNoteProtocolObserver::peerCountUpdated, m_peersCount.load());
+    m_observerManager.notify(&IisocoinProtocolObserver::peerCountUpdated, m_peersCount.load());
   }
 }
 
-void CryptoNoteProtocolHandler::stop() {
+void isocoinProtocolHandler::stop() {
   m_stop = true;
 }
 
-bool CryptoNoteProtocolHandler::start_sync(CryptoNoteConnectionContext& context) {
+bool isocoinProtocolHandler::start_sync(isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "Starting synchronization";
 
-  if (context.m_state == CryptoNoteConnectionContext::state_synchronizing) {
+  if (context.m_state == isocoinConnectionContext::state_synchronizing) {
     assert(context.m_needed_objects.empty());
     assert(context.m_requested_objects.empty());
 
@@ -107,11 +107,11 @@ bool CryptoNoteProtocolHandler::start_sync(CryptoNoteConnectionContext& context)
   return true;
 }
 
-bool CryptoNoteProtocolHandler::get_stat_info(core_stat_info& stat_inf) {
+bool isocoinProtocolHandler::get_stat_info(core_stat_info& stat_inf) {
   return m_core.get_stat_info(stat_inf);
 }
 
-void CryptoNoteProtocolHandler::log_connections() {
+void isocoinProtocolHandler::log_connections() {
   std::stringstream ss;
 
   ss << std::setw(25) << std::left << "Remote Host"
@@ -120,7 +120,7 @@ void CryptoNoteProtocolHandler::log_connections() {
     << std::setw(25) << "State"
     << std::setw(20) << "Lifetime(seconds)" << ENDL;
 
-  m_p2p->for_each_connection([&](const CryptoNoteConnectionContext& cntxt, PeerIdType peer_id) {
+  m_p2p->for_each_connection([&](const isocoinConnectionContext& cntxt, PeerIdType peer_id) {
     ss << std::setw(25) << std::left << std::string(cntxt.m_is_income ? "[INC]" : "[OUT]") +
       Common::ipAddressToString(cntxt.m_remote_ip) + ":" + std::to_string(cntxt.m_remote_port)
       << std::setw(20) << std::hex << peer_id
@@ -131,24 +131,24 @@ void CryptoNoteProtocolHandler::log_connections() {
   logger(INFO) << "Connections: " << ENDL << ss.str();
 }
 
-uint32_t CryptoNoteProtocolHandler::get_current_blockchain_height() {
+uint32_t isocoinProtocolHandler::get_current_blockchain_height() {
   uint32_t height;
   Crypto::Hash blockId;
   m_core.get_blockchain_top(height, blockId);
   return height;
 }
 
-bool CryptoNoteProtocolHandler::process_payload_sync_data(const CORE_SYNC_DATA& hshd, CryptoNoteConnectionContext& context, bool is_inital) {
-  if (context.m_state == CryptoNoteConnectionContext::state_befor_handshake && !is_inital)
+bool isocoinProtocolHandler::process_payload_sync_data(const CORE_SYNC_DATA& hshd, isocoinConnectionContext& context, bool is_inital) {
+  if (context.m_state == isocoinConnectionContext::state_befor_handshake && !is_inital)
     return true;
 
-  if (context.m_state == CryptoNoteConnectionContext::state_synchronizing) {
+  if (context.m_state == isocoinConnectionContext::state_synchronizing) {
   } else if (m_core.have_block(hshd.top_id)) {
     if (is_inital) {
       on_connection_synchronized();
-      context.m_state = CryptoNoteConnectionContext::state_pool_sync_required;
+      context.m_state = isocoinConnectionContext::state_pool_sync_required;
     } else {
-      context.m_state = CryptoNoteConnectionContext::state_normal;
+      context.m_state = isocoinConnectionContext::state_normal;
     }
   } else {
     int64_t diff = static_cast<int64_t>(hshd.current_height) - static_cast<int64_t>(get_current_blockchain_height());
@@ -161,7 +161,7 @@ bool CryptoNoteProtocolHandler::process_payload_sync_data(const CORE_SYNC_DATA& 
     logger(Logging::DEBUGGING) << "Remote top block height: " << hshd.current_height << ", id: " << hshd.top_id;
     //let the socket to send response to handshake, but request callback, to let send request data after response
     logger(Logging::TRACE) << context << "requesting synchronization";
-    context.m_state = CryptoNoteConnectionContext::state_sync_required;
+    context.m_state = isocoinConnectionContext::state_sync_required;
   }
 
   updateObservedHeight(hshd.current_height, context);
@@ -169,13 +169,13 @@ bool CryptoNoteProtocolHandler::process_payload_sync_data(const CORE_SYNC_DATA& 
 
   if (is_inital) {
     m_peersCount++;
-    m_observerManager.notify(&ICryptoNoteProtocolObserver::peerCountUpdated, m_peersCount.load());
+    m_observerManager.notify(&IisocoinProtocolObserver::peerCountUpdated, m_peersCount.load());
   }
 
   return true;
 }
 
-bool CryptoNoteProtocolHandler::get_payload_sync_data(CORE_SYNC_DATA& hshd) {
+bool isocoinProtocolHandler::get_payload_sync_data(CORE_SYNC_DATA& hshd) {
   uint32_t current_height;
   m_core.get_blockchain_top(current_height, hshd.top_id);
   hshd.current_height = current_height;
@@ -185,7 +185,7 @@ bool CryptoNoteProtocolHandler::get_payload_sync_data(CORE_SYNC_DATA& hshd) {
 
 
 template <typename Command, typename Handler>
-int notifyAdaptor(const BinaryArray& reqBuf, CryptoNoteConnectionContext& ctx, Handler handler) {
+int notifyAdaptor(const BinaryArray& reqBuf, isocoinConnectionContext& ctx, Handler handler) {
 
   typedef typename Command::request Request;
   int command = Command::ID;
@@ -200,18 +200,18 @@ int notifyAdaptor(const BinaryArray& reqBuf, CryptoNoteConnectionContext& ctx, H
 
 #define HANDLE_NOTIFY(CMD, Handler) case CMD::ID: { ret = notifyAdaptor<CMD>(in, ctx, std::bind(Handler, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)); break; }
 
-int CryptoNoteProtocolHandler::handleCommand(bool is_notify, int command, const BinaryArray& in, BinaryArray& out, CryptoNoteConnectionContext& ctx, bool& handled) {
+int isocoinProtocolHandler::handleCommand(bool is_notify, int command, const BinaryArray& in, BinaryArray& out, isocoinConnectionContext& ctx, bool& handled) {
   int ret = 0;
   handled = true;
 
   switch (command) {
-    HANDLE_NOTIFY(NOTIFY_NEW_BLOCK, &CryptoNoteProtocolHandler::handle_notify_new_block)
-    HANDLE_NOTIFY(NOTIFY_NEW_TRANSACTIONS, &CryptoNoteProtocolHandler::handle_notify_new_transactions)
-    HANDLE_NOTIFY(NOTIFY_REQUEST_GET_OBJECTS, &CryptoNoteProtocolHandler::handle_request_get_objects)
-    HANDLE_NOTIFY(NOTIFY_RESPONSE_GET_OBJECTS, &CryptoNoteProtocolHandler::handle_response_get_objects)
-    HANDLE_NOTIFY(NOTIFY_REQUEST_CHAIN, &CryptoNoteProtocolHandler::handle_request_chain)
-    HANDLE_NOTIFY(NOTIFY_RESPONSE_CHAIN_ENTRY, &CryptoNoteProtocolHandler::handle_response_chain_entry)
-    HANDLE_NOTIFY(NOTIFY_REQUEST_TX_POOL, &CryptoNoteProtocolHandler::handleRequestTxPool)
+    HANDLE_NOTIFY(NOTIFY_NEW_BLOCK, &isocoinProtocolHandler::handle_notify_new_block)
+    HANDLE_NOTIFY(NOTIFY_NEW_TRANSACTIONS, &isocoinProtocolHandler::handle_notify_new_transactions)
+    HANDLE_NOTIFY(NOTIFY_REQUEST_GET_OBJECTS, &isocoinProtocolHandler::handle_request_get_objects)
+    HANDLE_NOTIFY(NOTIFY_RESPONSE_GET_OBJECTS, &isocoinProtocolHandler::handle_response_get_objects)
+    HANDLE_NOTIFY(NOTIFY_REQUEST_CHAIN, &isocoinProtocolHandler::handle_request_chain)
+    HANDLE_NOTIFY(NOTIFY_RESPONSE_CHAIN_ENTRY, &isocoinProtocolHandler::handle_response_chain_entry)
+    HANDLE_NOTIFY(NOTIFY_REQUEST_TX_POOL, &isocoinProtocolHandler::handleRequestTxPool)
 
   default:
     handled = false;
@@ -222,23 +222,23 @@ int CryptoNoteProtocolHandler::handleCommand(bool is_notify, int command, const 
 
 #undef HANDLE_NOTIFY
 
-int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_NEW_BLOCK (hop " << arg.hop << ")";
 
   updateObservedHeight(arg.current_blockchain_height, context);
 
   context.m_remote_blockchain_height = arg.current_blockchain_height;
 
-  if (context.m_state != CryptoNoteConnectionContext::state_normal) {
+  if (context.m_state != isocoinConnectionContext::state_normal) {
     return 1;
   }
 
   for (auto tx_blob_it = arg.b.txs.begin(); tx_blob_it != arg.b.txs.end(); tx_blob_it++) {
-    CryptoNote::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
+    isocoin::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
     m_core.handle_incoming_tx(asBinaryArray(*tx_blob_it), tvc, true);
     if (tvc.m_verifivation_failed) {
       logger(Logging::INFO) << context << "Block verification failed: transaction verification failed, dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     }
   }
@@ -247,7 +247,7 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
   m_core.handle_incoming_block_blob(asBinaryArray(arg.b.block), bvc, true, false);
   if (bvc.m_verifivation_failed) {
     logger(Logging::DEBUGGING) << context << "Block verification failed, dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
   if (bvc.m_added_to_main_chain) {
@@ -260,7 +260,7 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
       requestMissingPoolTransactions(context);
     }
   } else if (bvc.m_marked_as_orphaned) {
-    context.m_state = CryptoNoteConnectionContext::state_synchronizing;
+    context.m_state = isocoinConnectionContext::state_synchronizing;
     NOTIFY_REQUEST_CHAIN::request r = boost::value_initialized<NOTIFY_REQUEST_CHAIN::request>();
     r.block_ids = m_core.buildSparseChain();
     logger(Logging::TRACE) << context << "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size();
@@ -270,13 +270,13 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
   return 1;
 }
 
-int CryptoNoteProtocolHandler::handle_notify_new_transactions(int command, NOTIFY_NEW_TRANSACTIONS::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_notify_new_transactions(int command, NOTIFY_NEW_TRANSACTIONS::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_NEW_TRANSACTIONS";
-  if (context.m_state != CryptoNoteConnectionContext::state_normal)
+  if (context.m_state != isocoinConnectionContext::state_normal)
     return 1;
 
   for (auto tx_blob_it = arg.txs.begin(); tx_blob_it != arg.txs.end();) {
-    CryptoNote::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
+    isocoin::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
     m_core.handle_incoming_tx(asBinaryArray(*tx_blob_it), tvc, false);
     if (tvc.m_verifivation_failed) {
       logger(Logging::INFO) << context << "Tx verification failed";
@@ -296,12 +296,12 @@ int CryptoNoteProtocolHandler::handle_notify_new_transactions(int command, NOTIF
   return true;
 }
 
-int CryptoNoteProtocolHandler::handle_request_get_objects(int command, NOTIFY_REQUEST_GET_OBJECTS::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_request_get_objects(int command, NOTIFY_REQUEST_GET_OBJECTS::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_REQUEST_GET_OBJECTS";
   NOTIFY_RESPONSE_GET_OBJECTS::request rsp;
   if (!m_core.handle_get_objects(arg, rsp)) {
     logger(Logging::ERROR) << context << "failed to handle request NOTIFY_REQUEST_GET_OBJECTS, dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
   }
   logger(Logging::TRACE) << context << "-->>NOTIFY_RESPONSE_GET_OBJECTS: blocks.size()=" << rsp.blocks.size() << ", txs.size()=" << rsp.txs.size()
     << ", rsp.m_current_blockchain_height=" << rsp.current_blockchain_height << ", missed_ids.size()=" << rsp.missed_ids.size();
@@ -309,13 +309,13 @@ int CryptoNoteProtocolHandler::handle_request_get_objects(int command, NOTIFY_RE
   return 1;
 }
 
-int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_RESPONSE_GET_OBJECTS::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_response_get_objects(int command, NOTIFY_RESPONSE_GET_OBJECTS::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_RESPONSE_GET_OBJECTS";
 
   if (context.m_last_response_height > arg.current_blockchain_height) {
     logger(Logging::ERROR) << context << "sent wrong NOTIFY_HAVE_OBJECTS: arg.m_current_blockchain_height=" << arg.current_blockchain_height
       << " < m_last_response_height=" << context.m_last_response_height << ", dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
@@ -330,14 +330,14 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
     if (!fromBinaryArray(b, asBinaryArray(block_entry.block))) {
       logger(Logging::ERROR) << context << "sent wrong block: failed to parse and validate block: \r\n"
         << toHex(asBinaryArray(block_entry.block)) << "\r\n dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     }
 
     //to avoid concurrency in core between connections, suspend connections which delivered block later then first one
     if (count == 2) {
       if (m_core.have_block(get_block_hash(b))) {
-        context.m_state = CryptoNoteConnectionContext::state_idle;
+        context.m_state = isocoinConnectionContext::state_idle;
         context.m_needed_objects.clear();
         context.m_requested_objects.clear();
         logger(Logging::DEBUGGING) << context << "Connection set to idle state.";
@@ -350,13 +350,13 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
     if (req_it == context.m_requested_objects.end()) {
       logger(Logging::ERROR) << context << "sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id=" << Common::podToHex(blockHash)
         << " wasn't requested, dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     }
     if (b.transactionHashes.size() != block_entry.txs.size()) {
       logger(Logging::ERROR) << context << "sent wrong NOTIFY_RESPONSE_GET_OBJECTS: block with id=" << Common::podToHex(blockHash)
         << ", transactionHashes.size()=" << b.transactionHashes.size() << " mismatch with block_complete_entry.m_txs.size()=" << block_entry.txs.size() << ", dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     }
 
@@ -367,7 +367,7 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
     logger(Logging::ERROR, Logging::BRIGHT_RED) << context <<
       "returned not all requested objects (context.m_requested_objects.size()="
       << context.m_requested_objects.size() << "), dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
@@ -387,14 +387,14 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
   m_core.get_blockchain_top(height, top);
   logger(DEBUGGING, BRIGHT_GREEN) << "Local blockchain updated, new height = " << height;
 
-  if (!m_stop && context.m_state == CryptoNoteConnectionContext::state_synchronizing) {
+  if (!m_stop && context.m_state == isocoinConnectionContext::state_synchronizing) {
     request_missing_objects(context, true);
   }
 
   return 1;
 }
 
-int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& context, const std::vector<block_complete_entry>& blocks) {
+int isocoinProtocolHandler::processObjects(isocoinConnectionContext& context, const std::vector<block_complete_entry>& blocks) {
 
   for (const block_complete_entry& block_entry : blocks) {
     if (m_stop) {
@@ -408,7 +408,7 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
       if (tvc.m_verifivation_failed) {
         logger(Logging::ERROR) << context << "transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, \r\ntx_id = "
           << Common::podToHex(getBinaryArrayHash(asBinaryArray(tx_blob))) << ", dropping connection";
-        context.m_state = CryptoNoteConnectionContext::state_shutdown;
+        context.m_state = isocoinConnectionContext::state_shutdown;
         return 1;
       }
     }
@@ -419,15 +419,15 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
 
     if (bvc.m_verifivation_failed) {
       logger(Logging::DEBUGGING) << context << "Block verification failed, dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     } else if (bvc.m_marked_as_orphaned) {
       logger(Logging::INFO) << context << "Block received at sync phase was marked as orphaned, dropping connection";
-      context.m_state = CryptoNoteConnectionContext::state_shutdown;
+      context.m_state = isocoinConnectionContext::state_shutdown;
       return 1;
     } else if (bvc.m_already_exists) {
       logger(Logging::DEBUGGING) << context << "Block already exists, switching to idle state";
-      context.m_state = CryptoNoteConnectionContext::state_idle;
+      context.m_state = isocoinConnectionContext::state_idle;
       context.m_needed_objects.clear();
       context.m_requested_objects.clear();
       return 1;
@@ -441,22 +441,22 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
 }
 
 
-bool CryptoNoteProtocolHandler::on_idle() {
+bool isocoinProtocolHandler::on_idle() {
   return m_core.on_idle();
 }
 
-int CryptoNoteProtocolHandler::handle_request_chain(int command, NOTIFY_REQUEST_CHAIN::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_request_chain(int command, NOTIFY_REQUEST_CHAIN::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << arg.block_ids.size();
 
   if (arg.block_ids.empty()) {
     logger(Logging::ERROR, Logging::BRIGHT_RED) << context << "Failed to handle NOTIFY_REQUEST_CHAIN. block_ids is empty";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
   if (arg.block_ids.back() != m_core.getBlockIdByHeight(0)) {
     logger(Logging::ERROR) << context << "Failed to handle NOTIFY_REQUEST_CHAIN. block_ids doesn't end with genesis block ID";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
@@ -468,7 +468,7 @@ int CryptoNoteProtocolHandler::handle_request_chain(int command, NOTIFY_REQUEST_
   return 1;
 }
 
-bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionContext& context, bool check_having_blocks) {
+bool isocoinProtocolHandler::request_missing_objects(isocoinConnectionContext& context, bool check_having_blocks) {
   if (context.m_needed_objects.size()) {
     //we know objects that we need, request this objects
     NOTIFY_REQUEST_GET_OBJECTS::request req;
@@ -508,14 +508,14 @@ bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionCont
 
     requestMissingPoolTransactions(context);
 
-    context.m_state = CryptoNoteConnectionContext::state_normal;
+    context.m_state = isocoinConnectionContext::state_normal;
     logger(Logging::INFO, Logging::BRIGHT_GREEN) << context << "SYNCHRONIZED OK";
     on_connection_synchronized();
   }
   return true;
 }
 
-bool CryptoNoteProtocolHandler::on_connection_synchronized() {
+bool isocoinProtocolHandler::on_connection_synchronized() {
   bool val_expected = false;
   if (m_synchronized.compare_exchange_strong(val_expected, true)) {
     logger(Logging::INFO) << ENDL << "**********************************************************************" << ENDL
@@ -531,18 +531,18 @@ bool CryptoNoteProtocolHandler::on_connection_synchronized() {
     uint32_t height;
     Crypto::Hash hash;
     m_core.get_blockchain_top(height, hash);
-    m_observerManager.notify(&ICryptoNoteProtocolObserver::blockchainSynchronized, height);
+    m_observerManager.notify(&IisocoinProtocolObserver::blockchainSynchronized, height);
   }
   return true;
 }
 
-int CryptoNoteProtocolHandler::handle_response_chain_entry(int command, NOTIFY_RESPONSE_CHAIN_ENTRY::request& arg, CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handle_response_chain_entry(int command, NOTIFY_RESPONSE_CHAIN_ENTRY::request& arg, isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_RESPONSE_CHAIN_ENTRY: m_block_ids.size()=" << arg.m_block_ids.size()
     << ", m_start_height=" << arg.start_height << ", m_total_height=" << arg.total_height;
 
   if (!arg.m_block_ids.size()) {
     logger(Logging::ERROR) << context << "sent empty m_block_ids, dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
@@ -551,7 +551,7 @@ int CryptoNoteProtocolHandler::handle_response_chain_entry(int command, NOTIFY_R
       << context << "sent m_block_ids starting from unknown id: "
       << Common::podToHex(arg.m_block_ids.front())
       << " , dropping connection";
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
     return 1;
   }
 
@@ -564,7 +564,7 @@ int CryptoNoteProtocolHandler::handle_response_chain_entry(int command, NOTIFY_R
       << "sent wrong NOTIFY_RESPONSE_CHAIN_ENTRY, with \r\nm_total_height="
       << arg.total_height << "\r\nm_start_height=" << arg.start_height
       << "\r\nm_block_ids.size()=" << arg.m_block_ids.size();
-    context.m_state = CryptoNoteConnectionContext::state_shutdown;
+    context.m_state = isocoinConnectionContext::state_shutdown;
   }
 
   for (auto& bl_id : arg.m_block_ids) {
@@ -576,8 +576,8 @@ int CryptoNoteProtocolHandler::handle_response_chain_entry(int command, NOTIFY_R
   return 1;
 }
 
-int CryptoNoteProtocolHandler::handleRequestTxPool(int command, NOTIFY_REQUEST_TX_POOL::request& arg,
-                                                     CryptoNoteConnectionContext& context) {
+int isocoinProtocolHandler::handleRequestTxPool(int command, NOTIFY_REQUEST_TX_POOL::request& arg,
+                                                     isocoinConnectionContext& context) {
   logger(Logging::TRACE) << context << "NOTIFY_REQUEST_TX_POOL: txs.size() = " << arg.txs.size();
 
   std::vector<Transaction> addedTransactions;
@@ -600,17 +600,17 @@ int CryptoNoteProtocolHandler::handleRequestTxPool(int command, NOTIFY_REQUEST_T
 }
 
 
-void CryptoNoteProtocolHandler::relay_block(NOTIFY_NEW_BLOCK::request& arg) {
+void isocoinProtocolHandler::relay_block(NOTIFY_NEW_BLOCK::request& arg) {
   auto buf = LevinProtocol::encode(arg);
   m_p2p->externalRelayNotifyToAll(NOTIFY_NEW_BLOCK::ID, buf);
 }
 
-void CryptoNoteProtocolHandler::relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg) {
+void isocoinProtocolHandler::relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg) {
   auto buf = LevinProtocol::encode(arg);
   m_p2p->externalRelayNotifyToAll(NOTIFY_NEW_TRANSACTIONS::ID, buf);
 }
 
-void CryptoNoteProtocolHandler::requestMissingPoolTransactions(const CryptoNoteConnectionContext& context) {
+void isocoinProtocolHandler::requestMissingPoolTransactions(const isocoinConnectionContext& context) {
   if (context.version < P2PProtocolVersion::V1) {
     return;
   }
@@ -628,7 +628,7 @@ void CryptoNoteProtocolHandler::requestMissingPoolTransactions(const CryptoNoteC
   }
 }
 
-void CryptoNoteProtocolHandler::updateObservedHeight(uint32_t peerHeight, const CryptoNoteConnectionContext& context) {
+void isocoinProtocolHandler::updateObservedHeight(uint32_t peerHeight, const isocoinConnectionContext& context) {
   bool updated = false;
   {
     std::lock_guard<std::mutex> lock(m_observedHeightMutex);
@@ -650,14 +650,14 @@ void CryptoNoteProtocolHandler::updateObservedHeight(uint32_t peerHeight, const 
 
   if (updated) {
     logger(TRACE) << "Observed height updated: " << m_observedHeight;
-    m_observerManager.notify(&ICryptoNoteProtocolObserver::lastKnownBlockHeightUpdated, m_observedHeight);
+    m_observerManager.notify(&IisocoinProtocolObserver::lastKnownBlockHeightUpdated, m_observedHeight);
   }
 }
 
-void CryptoNoteProtocolHandler::recalculateMaxObservedHeight(const CryptoNoteConnectionContext& context) {
+void isocoinProtocolHandler::recalculateMaxObservedHeight(const isocoinConnectionContext& context) {
   //should be locked outside
   uint32_t peerHeight = 0;
-  m_p2p->for_each_connection([&peerHeight, &context](const CryptoNoteConnectionContext& ctx, PeerIdType peerId) {
+  m_p2p->for_each_connection([&peerHeight, &context](const isocoinConnectionContext& ctx, PeerIdType peerId) {
     if (ctx.m_connection_id != context.m_connection_id) {
       peerHeight = std::max(peerHeight, ctx.m_remote_blockchain_height);
     }
@@ -669,16 +669,16 @@ void CryptoNoteProtocolHandler::recalculateMaxObservedHeight(const CryptoNoteCon
   m_observedHeight = std::max(peerHeight, localHeight + 1);
 }
 
-uint32_t CryptoNoteProtocolHandler::getObservedHeight() const {
+uint32_t isocoinProtocolHandler::getObservedHeight() const {
   std::lock_guard<std::mutex> lock(m_observedHeightMutex);
   return m_observedHeight;
 };
 
-bool CryptoNoteProtocolHandler::addObserver(ICryptoNoteProtocolObserver* observer) {
+bool isocoinProtocolHandler::addObserver(IisocoinProtocolObserver* observer) {
   return m_observerManager.add(observer);
 }
 
-bool CryptoNoteProtocolHandler::removeObserver(ICryptoNoteProtocolObserver* observer) {
+bool isocoinProtocolHandler::removeObserver(IisocoinProtocolObserver* observer) {
   return m_observerManager.remove(observer);
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include "INode.h"
 #include "ITransaction.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
 struct BlockchainInterval {
   uint32_t startHeight;
@@ -22,7 +22,7 @@ struct BlockchainInterval {
 
 struct CompleteBlock {
   Crypto::Hash blockHash;
-  boost::optional<CryptoNote::Block> block;
+  boost::optional<isocoin::Block> block;
   // first transaction is always coinbase
   std::list<std::shared_ptr<ITransactionReader>> transactions;
 };

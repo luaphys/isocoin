@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,23 +6,23 @@
 
 #include "INode.h"
 #include "ITransaction.h"
-#include "CryptoNoteProtocol/ICryptoNoteProtocolQuery.h"
-#include "CryptoNoteProtocol/ICryptoNoteProtocolObserver.h"
-#include "CryptoNoteCore/ICore.h"
-#include "CryptoNoteCore/ICoreObserver.h"
+#include "isocoinProtocol/IisocoinProtocolQuery.h"
+#include "isocoinProtocol/IisocoinProtocolObserver.h"
+#include "isocoinCore/ICore.h"
+#include "isocoinCore/ICoreObserver.h"
 #include "Common/ObserverManager.h"
 #include "BlockchainExplorer/BlockchainExplorerDataBuilder.h"
 
 #include <thread>
 #include <boost/asio.hpp>
 
-namespace CryptoNote {
+namespace isocoin {
 
 class core;
 
-class InProcessNode : public INode, public CryptoNote::ICryptoNoteProtocolObserver, public CryptoNote::ICoreObserver {
+class InProcessNode : public INode, public isocoin::IisocoinProtocolObserver, public isocoin::ICoreObserver {
 public:
-  InProcessNode(CryptoNote::ICore& core, CryptoNote::ICryptoNoteProtocolQuery& protocol);
+  InProcessNode(isocoin::ICore& core, isocoin::IisocoinProtocolQuery& protocol);
 
   InProcessNode(const InProcessNode&) = delete;
   InProcessNode(InProcessNode&&) = delete;
@@ -45,11 +45,11 @@ public:
   virtual uint32_t getKnownBlockCount() const override;
   virtual uint64_t getLastLocalBlockTimestamp() const override;
 
-  virtual void getNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<CryptoNote::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
+  virtual void getNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<isocoin::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
   virtual void getTransactionOutsGlobalIndices(const Crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) override;
   virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount,
-      std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override;
-  virtual void relayTransaction(const CryptoNote::Transaction& transaction, const Callback& callback) override;
+      std::vector<isocoin::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override;
+  virtual void relayTransaction(const isocoin::Transaction& transaction, const Callback& callback) override;
   virtual void queryBlocks(std::vector<Crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks,
     uint32_t& startHeight, const Callback& callback) override;
   virtual void getPoolSymmetricDifference(std::vector<Crypto::Hash>&& knownPoolTxIds, Crypto::Hash knownBlockId, bool& isBcActual,
@@ -72,19 +72,19 @@ private:
   virtual void blockchainUpdated() override;
   virtual void poolUpdated() override;
 
-  void getNewBlocksAsync(std::vector<Crypto::Hash>& knownBlockIds, std::vector<CryptoNote::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback);
-  std::error_code doGetNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<CryptoNote::block_complete_entry>& newBlocks, uint32_t& startHeight);
+  void getNewBlocksAsync(std::vector<Crypto::Hash>& knownBlockIds, std::vector<isocoin::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback);
+  std::error_code doGetNewBlocks(std::vector<Crypto::Hash>&& knownBlockIds, std::vector<isocoin::block_complete_entry>& newBlocks, uint32_t& startHeight);
 
   void getTransactionOutsGlobalIndicesAsync(const Crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback);
   std::error_code doGetTransactionOutsGlobalIndices(const Crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices);
 
   void getRandomOutsByAmountsAsync(std::vector<uint64_t>& amounts, uint64_t outsCount,
-      std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback);
+      std::vector<isocoin::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback);
   std::error_code doGetRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount,
-      std::vector<CryptoNote::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result);
+      std::vector<isocoin::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result);
 
-  void relayTransactionAsync(const CryptoNote::Transaction& transaction, const Callback& callback);
-  std::error_code doRelayTransaction(const CryptoNote::Transaction& transaction);
+  void relayTransactionAsync(const isocoin::Transaction& transaction, const Callback& callback);
+  std::error_code doRelayTransaction(const isocoin::Transaction& transaction);
 
   void queryBlocksLiteAsync(std::vector<Crypto::Hash>& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks, uint32_t& startHeight,
           const Callback& callback);
@@ -125,8 +125,8 @@ private:
   };
 
   State state;
-  CryptoNote::ICore& core;
-  CryptoNote::ICryptoNoteProtocolQuery& protocol;
+  isocoin::ICore& core;
+  isocoin::IisocoinProtocolQuery& protocol;
   Tools::ObserverManager<INodeObserver> observerManager;
 
   boost::asio::io_service ioService;
@@ -138,4 +138,4 @@ private:
   mutable std::mutex mutex;
 };
 
-} //namespace CryptoNote
+} //namespace isocoin

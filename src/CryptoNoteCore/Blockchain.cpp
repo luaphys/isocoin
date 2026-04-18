@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
 #include "Common/StdOutputStream.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
 #include "Serialization/BinarySerializationTools.h"
-#include "CryptoNoteTools.h"
+#include "isocoinTools.h"
 
 using namespace Logging;
 using namespace Common;
@@ -45,20 +45,20 @@ bool operator<(const Crypto::KeyImage& keyImage1, const Crypto::KeyImage& keyIma
 #define CURRENT_BLOCKCACHE_STORAGE_ARCHIVE_VER 1
 #define CURRENT_BLOCKCHAININDICES_STORAGE_ARCHIVE_VER 1
 
-namespace CryptoNote {
+namespace isocoin {
 class BlockCacheSerializer;
 class BlockchainIndicesSerializer;
 }
 
-namespace CryptoNote {
+namespace isocoin {
 
 template<typename K, typename V, typename Hash>
-bool serialize(google::sparse_hash_map<K, V, Hash>& value, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(google::sparse_hash_map<K, V, Hash>& value, Common::StringView name, isocoin::ISerializer& serializer) {
   return serializeMap(value, name, serializer, [&value](size_t size) { value.resize(size); });
 }
 
 template<typename K, typename Hash>
-bool serialize(google::sparse_hash_set<K, Hash>& value, Common::StringView name, CryptoNote::ISerializer& serializer) {
+bool serialize(google::sparse_hash_set<K, Hash>& value, Common::StringView name, isocoin::ISerializer& serializer) {
   size_t size = value.size();
   if (!serializer.beginArray(size, name)) {
     return false;
@@ -82,7 +82,7 @@ bool serialize(google::sparse_hash_set<K, Hash>& value, Common::StringView name,
 }
 
 // custom serialization to speedup cache loading
-bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>>& value, Common::StringView name, CryptoNote::ISerializer& s) {
+bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>>& value, Common::StringView name, isocoin::ISerializer& s) {
   const size_t elementSize = sizeof(std::pair<Blockchain::TransactionIndex, uint16_t>);
   size_t size = value.size() * elementSize;
 
@@ -90,7 +90,7 @@ bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>>& v
     return false;
   }
 
-  if (s.type() == CryptoNote::ISerializer::INPUT) {
+  if (s.type() == isocoin::ISerializer::INPUT) {
     if (size % elementSize != 0) {
       throw std::runtime_error("Invalid vector size");
     }
@@ -126,7 +126,7 @@ public:
 
       StdInputStream stream(stdStream);
       BinaryInputStreamSerializer s(stream);
-      CryptoNote::serialize(*this, s);
+      isocoin::serialize(*this, s);
     } catch (std::exception& e) {
       logger(WARNING) << "loading failed: " << e.what();
     }
@@ -141,7 +141,7 @@ public:
 
       StdOutputStream stream(file);
       BinaryOutputStreamSerializer s(stream);
-      CryptoNote::serialize(*this, s);
+      isocoin::serialize(*this, s);
     } catch (std::exception&) {
       return false;
     }
@@ -321,11 +321,11 @@ bool Blockchain::removeObserver(IBlockchainStorageObserver* observer) {
   return m_observerManager.remove(observer);
 }
 
-bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock) {
+bool Blockchain::checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock) {
   return checkTransactionInputs(tx, maxUsedBlock.height, maxUsedBlock.id);
 }
 
-bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) {
+bool Blockchain::checkTransactionInputs(const isocoin::Transaction& tx, BlockInfo& maxUsedBlock, BlockInfo& lastFailed) {
 
   BlockInfo tail;
 
@@ -363,7 +363,7 @@ bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, Block
   return true;
 }
 
-bool Blockchain::haveSpentKeyImages(const CryptoNote::Transaction& tx) {
+bool Blockchain::haveSpentKeyImages(const isocoin::Transaction& tx) {
   return this->haveTransactionKeyImagesAsSpent(tx);
 }
 
@@ -1106,7 +1106,7 @@ bool Blockchain::getBlocks(uint32_t start_offset, uint32_t count, std::list<Bloc
   return true;
 }
 
-bool Blockchain::handleGetObjects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp) { //Deprecated. Should be removed with CryptoNoteProtocolHandler.
+bool Blockchain::handleGetObjects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp) { //Deprecated. Should be removed with isocoinProtocolHandler.
   std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
   rsp.current_blockchain_height = getCurrentBlockchainHeight();
   std::list<Block> blocks;

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,9 +12,9 @@
 #include "Common/StringTools.h"
 #include "crypto/hash.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
-struct CryptoNoteConnectionContext {
+struct isocoinConnectionContext {
   uint8_t version;
   boost::uuids::uuid m_connection_id;
   uint32_t m_remote_ip = 0;
@@ -39,21 +39,21 @@ struct CryptoNoteConnectionContext {
   uint32_t m_last_response_height = 0;
 };
 
-inline std::string get_protocol_state_string(CryptoNoteConnectionContext::state s) {
+inline std::string get_protocol_state_string(isocoinConnectionContext::state s) {
   switch (s)  {
-  case CryptoNoteConnectionContext::state_befor_handshake:
+  case isocoinConnectionContext::state_befor_handshake:
     return "state_befor_handshake";
-  case CryptoNoteConnectionContext::state_synchronizing:
+  case isocoinConnectionContext::state_synchronizing:
     return "state_synchronizing";
-  case CryptoNoteConnectionContext::state_idle:
+  case isocoinConnectionContext::state_idle:
     return "state_idle";
-  case CryptoNoteConnectionContext::state_normal:
+  case isocoinConnectionContext::state_normal:
     return "state_normal";
-  case CryptoNoteConnectionContext::state_sync_required:
+  case isocoinConnectionContext::state_sync_required:
     return "state_sync_required";
-  case CryptoNoteConnectionContext::state_pool_sync_required:
+  case isocoinConnectionContext::state_pool_sync_required:
     return "state_pool_sync_required";
-  case CryptoNoteConnectionContext::state_shutdown:
+  case isocoinConnectionContext::state_shutdown:
     return "state_shutdown";
   default:
     return "unknown";
@@ -63,7 +63,7 @@ inline std::string get_protocol_state_string(CryptoNoteConnectionContext::state 
 }
 
 namespace std {
-inline std::ostream& operator << (std::ostream& s, const CryptoNote::CryptoNoteConnectionContext& context) {
+inline std::ostream& operator << (std::ostream& s, const isocoin::isocoinConnectionContext& context) {
   return s << "[" << Common::ipAddressToString(context.m_remote_ip) << ":" << 
     context.m_remote_port << (context.m_is_income ? " INC" : " OUT") << "] ";
 }

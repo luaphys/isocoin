@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Cryptonote developers
+// Copyright (c) 2011-2016 The isocoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +11,7 @@
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 
-namespace CryptoNote {
+namespace isocoin {
 
 //Blocking HttpParser
 class HttpParser {
@@ -29,6 +29,6 @@ private:
   void readBody(std::istream& stream, std::string& body, const size_t bodyLen);
 };
 
-} //namespace CryptoNote
+} //namespace isocoin
 
 #endif /* HTTPPARSER_H_ */
